@@ -1,15 +1,15 @@
 import { Outlet } from 'react-router-dom';
-import { Box, Flex } from '@mantine/core';
+import { Box, Stack } from '@mantine/core';
 import Navigation from './Navigation';
 
 const MainLayout = () => {
     return (
-        <Flex h='100vh' direction={'column'}>
-            <Navigation />
-            <Box style={{ flex: '1' }}>
+        <Stack>
+            <Navigation style={{ width: '100%' }} />
+            <Box>
                 <Outlet />
             </Box>
-        </Flex>
+        </Stack>
     );
 };
 
