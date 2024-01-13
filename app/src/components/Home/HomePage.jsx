@@ -11,6 +11,7 @@ const HomePage = () => {
                 <Center h='100%'>
                     <Text
                         fw={900}
+                        c='gray.9'
                         style={{
                             fontSize: '80px',
                         }}
