@@ -7,6 +7,7 @@ import {
     useMantineColorScheme,
 } from '@mantine/core';
 import { FaMoon, FaSun } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const Navigation = () => {
     const { setColorScheme } = useMantineColorScheme();
@@ -28,8 +29,12 @@ const Navigation = () => {
             >
                 <Code fz='xl'>Contractors Jobs</Code>
                 <Group>
-                    <Button>Login</Button>
-                    <Button>Register</Button>
+                    <Button component={Link} to='/auth/login'>
+                        Login
+                    </Button>
+                    <Button component={Link} to='/auth/register'>
+                        Register
+                    </Button>
                 </Group>
                 <Button variant='link' onClick={toggleColorScheme}>
                     {computedColorScheme === 'light' ? <FaMoon /> : <FaSun />}
