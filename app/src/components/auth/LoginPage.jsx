@@ -27,7 +27,7 @@ const LoginPage = () => {
         <Center h='100vh'>
             <Card w='300px' shadow='sm' padding='lg' radius='md' withBorder>
                 <Text my='xl' mx='auto' fz='xl' fw='900' fs='italic'>
-                    Login page
+                    Login form
                 </Text>
                 <form onSubmit={form.onSubmit(submitHandler)}>
                     <TextInput
