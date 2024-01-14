@@ -1,17 +1,20 @@
 import { Button, Card, Center, PasswordInput, Select, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { useRegisterUserMutation } from '../../store/features/api/authApi';
 
 const RegisterPage = () => {
+    const [registerUser] = useRegisterUserMutation();
+
     const form = useForm({
         initialValues: {
             email: '',
             password: '',
-            name: '',
+            fullName: '',
             rePassword: '',
             role: '',
         },
         validate: {
-            name: (value) => (value.trim().length > 4 ? null : 'Please write your full name'),
+            fullName: (value) => (value.trim().length > 4 ? null : 'Please write your full name'),
             email: (value) =>
                 /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
                     ? null
@@ -27,8 +30,13 @@ const RegisterPage = () => {
         },
     });
 
-    const submitHandler = (data) => {
-        console.log(data);
+    const submitHandler = async (data) => {
+        await registerUser({
+            fullName: data.fullName,
+            password: data.password,
+            role: data.role,
+            email: data.email,
+        });
     };
 
     return (
@@ -44,7 +52,7 @@ const RegisterPage = () => {
                         label='Full Name'
                         placeholder='your full name'
                         mb='lg'
-                        {...form.getInputProps('name')}
+                        {...form.getInputProps('fullName')}
                     />
                     <TextInput
                         required
@@ -80,7 +88,7 @@ const RegisterPage = () => {
                         {...form.getInputProps('rePassword')}
                     />
                     <Button type='Submit' fullWidth mt='md' radius='lg'>
-                        Login
+                        Register
                     </Button>
                 </form>
             </Card>
