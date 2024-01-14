@@ -17,7 +17,7 @@ const authApi = createApi({
                     return {
                         url: '/users/register',
                         method: 'POST',
-                        body: JSON.stringify(args),
+                        body: args,
                     };
                 },
             }),
