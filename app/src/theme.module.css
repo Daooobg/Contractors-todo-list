@@ -1,0 +1,12 @@
+.root {
+    &[data-variant='danger'] {
+        @mixin dark {
+            background-color: var(--mantine-color-red-9);
+        }
+
+        @mixin light {
+            background-color: var(--mantine-color-red-7);
+        }
+        color: var(--mantine-color-red-0);
+    }
+}
