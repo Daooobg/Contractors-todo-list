@@ -1,9 +1,18 @@
 import { Button, Card, Center, PasswordInput, Select, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useRegisterUserMutation } from '../../store/features/api/authApi';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {
-    const [registerUser] = useRegisterUserMutation();
+    const [registerUser, {isSuccess: isRegisterSuccess}] = useRegisterUserMutation();
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if(isRegisterSuccess) {
+            navigate('/')
+        }
+    })
 
     const form = useForm({
         initialValues: {
