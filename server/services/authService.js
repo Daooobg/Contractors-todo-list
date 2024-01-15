@@ -32,6 +32,13 @@ const createAndSendToken = async (user) => {
 
 const getUserByEmail = (email) => User.findOne({ email });
 
+exports.getNonAdminNonOwnerUnapprovedUsers = () => {
+    return User.find({
+        role: { $nin: ['Admin'] },
+        approved: false,
+    }).select('-password -__v');
+};
+
 exports.register = async (fullName, email, password, role) => {
     console.log(fullName, email, password, role);
     const user = await User.create({ fullName, email, password, role });
