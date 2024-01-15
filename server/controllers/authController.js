@@ -9,9 +9,9 @@ exports.register = catchAsync(async (req, res, next) => {
         return next(new AppError('All fields are required', 400, req.body));
     }
 
-    const token = await authService.register(fullName, email, password, role);
+     await authService.register(fullName, email, password, role);
 
-    res.status(200).json(token);
+    res.status(204).json();
 });
 
 exports.login = catchAsync(async (req, res, next) => {
