@@ -7,8 +7,14 @@ const authApi = createApi({
     reducerPath: 'authApi',
     baseQuery: fetchBaseQuery({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        prepareHeaders: async (headers) => {
+        prepareHeaders: async (headers, { getState }) => {
             headers.set('Content-Type', 'application/json');
+
+            const token = await getState().auth.user;
+
+            if (token && token.AccessToken) {
+                headers.set('Authorization', token.AccessToken);
+            }
             return headers;
         },
     }),
@@ -96,9 +102,12 @@ const authApi = createApi({
                     }
                 },
             }),
+            getAllUsersForVerification: builder.query({
+                query: () => ({ url: '/users/usersVerifications' }),
+            }),
         };
     },
 });
 
-export const { useRegisterUserMutation, useLoginUserMutation } = authApi;
+export const { useRegisterUserMutation, useLoginUserMutation, useGetAllUsersForVerificationQuery } = authApi;
 export { authApi };
