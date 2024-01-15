@@ -47,7 +47,7 @@ const authApi = createApi({
                             id,
                             color: 'red',
                             title: 'Register',
-                            message: 'error',
+                            message: error.error.data,
                             icon: <VscError style={{ width: '40px', height: '40px' }} />,
                             loading: false,
                             autoClose: 3000,
