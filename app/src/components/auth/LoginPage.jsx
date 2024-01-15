@@ -4,16 +4,20 @@ import { useNavigate } from 'react-router-dom';
 
 import { useLoginUserMutation } from '../../store/features/api/authApi';
 import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { addUser } from '../../store/features/slices/authSlice';
 
 const LoginPage = () => {
-    const [loginUser, { isSuccess: isLoginSuccess }] = useLoginUserMutation();
+    const [loginUser, { data: userData, isSuccess: isLoginSuccess }] = useLoginUserMutation();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if (isLoginSuccess) {
+            dispatch(addUser(userData));
             navigate('/dashboard');
         }
-    }, [isLoginSuccess, navigate]);
+    }, [isLoginSuccess, navigate, dispatch, userData]);
 
     const form = useForm({
         initialValues: {
