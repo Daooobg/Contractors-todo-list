@@ -9,14 +9,11 @@ import {
     useMantineColorScheme,
 } from '@mantine/core';
 import { FaMoon, FaSun } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { removeUser } from '../../store/features/slices/authSlice';
-import { useDisclosure } from '@mantine/hooks';
 
-const Navigation = ({ userData, opened, toggle }) => {
-    // const [opened, {toggle}] = useDisclosure();
-    // const userData = useSelector((state) => state.auth.user);
+const Header = ({ userData, opened, toggle }) => {
     const dispatch = useDispatch();
     const { setColorScheme } = useMantineColorScheme();
     const computedColorScheme = useComputedColorScheme('light');
@@ -68,4 +65,4 @@ const Navigation = ({ userData, opened, toggle }) => {
     );
 };
 
-export default Navigation;
+export default Header;

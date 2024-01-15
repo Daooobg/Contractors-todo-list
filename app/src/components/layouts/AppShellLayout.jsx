@@ -1,5 +1,5 @@
 import { AppShell, Button } from '@mantine/core';
-import Navigation from './Navigation';
+import Header from './Header';
 import { Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useDisclosure } from '@mantine/hooks';
@@ -13,7 +13,7 @@ const AppShellLayout = () => {
             navbar={{ width: userData ? 200 : 0, breakpoint: 'xl', collapsed: { mobile: !opened } }}
         >
             <AppShell.Header>
-                <Navigation toggle={toggle} userData={userData} opened={opened} />
+                <Header toggle={toggle} userData={userData} opened={opened} />
             </AppShell.Header>
             {userData && (
                 <AppShell.Navbar>
