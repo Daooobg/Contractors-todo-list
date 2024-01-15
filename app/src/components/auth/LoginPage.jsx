@@ -15,7 +15,7 @@ const LoginPage = () => {
     useEffect(() => {
         if (isLoginSuccess) {
             dispatch(addUser(userData));
-            navigate('/dashboard');
+            navigate('/');
         }
     }, [isLoginSuccess, navigate, dispatch, userData]);
 
@@ -41,9 +41,9 @@ const LoginPage = () => {
     };
 
     return (
-        <Center h='100vh'>
-            <Card w='300px' shadow='sm' padding='lg' radius='md' withBorder>
-                <Text my='xl' mx='auto' fz='xl' fw='900' fs='italic'>
+        <Center mt={80}>
+            <Card w={300} shadow='sm' padding='lg' radius='md' withBorder>
+                <Text my='xl' mx='auto' fz='xl' fw={900} fs='italic'>
                     Login form
                 </Text>
                 <form onSubmit={form.onSubmit(submitHandler)}>

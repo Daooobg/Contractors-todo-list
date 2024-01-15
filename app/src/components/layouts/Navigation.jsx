@@ -1,4 +1,5 @@
 import {
+    Burger,
     Button,
     Code,
     Flex,
@@ -11,9 +12,11 @@ import { FaMoon, FaSun } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { removeUser } from '../../store/features/slices/authSlice';
+import { useDisclosure } from '@mantine/hooks';
 
-const Navigation = () => {
-    const userData = useSelector((state) => state.auth.user);
+const Navigation = ({ userData, opened, toggle }) => {
+    // const [opened, {toggle}] = useDisclosure();
+    // const userData = useSelector((state) => state.auth.user);
     const dispatch = useDispatch();
     const { setColorScheme } = useMantineColorScheme();
     const computedColorScheme = useComputedColorScheme('light');
@@ -36,6 +39,7 @@ const Navigation = () => {
                 mx='xl'
                 align='center'
             >
+                <Burger hiddenFrom='xl' opened={opened} onClick={toggle} />
                 <Code fz='xl'>Contractors Jobs</Code>
                 <Group>
                     {userData ? (

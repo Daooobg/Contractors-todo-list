@@ -13,7 +13,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <MantineProvider theme={theme} defaultColorScheme='light'>
         <React.StrictMode>
             <Provider store={store}>
-                <Notifications  pos='absolute' top='100px' left='100px' zIndex={1000} />
+                <Notifications  pos='absolute' top='100px' left='50%' zIndex={1000} />
                     <App />
             </Provider>
         </React.StrictMode>

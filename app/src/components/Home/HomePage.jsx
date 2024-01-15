@@ -5,7 +5,7 @@ const HomePage = () => {
         <Box mx='auto'>
             <BackgroundImage
                 fit='cover'
-                h='100vh'
+                h='calc(100vh - 60px)'
                 src='src/assets/images/pexels-malte-luk-1669754.jpg'
             >
                 <Center h='100%'>
