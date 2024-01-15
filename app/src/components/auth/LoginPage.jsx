@@ -13,7 +13,7 @@ const LoginPage = () => {
         if (isLoginSuccess) {
             navigate('/dashboard');
         }
-    });
+    }, [isLoginSuccess, navigate]);
 
     const form = useForm({
         initialValues: {
