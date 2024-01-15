@@ -11,7 +11,7 @@ const EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 
 const createAndSendToken = async (user) => {
     const payload = {
-        name: user.name,
+        fullName: user.fullName,
         email: user.email,
         _id: user._id,
         role: user.role,
@@ -21,7 +21,7 @@ const createAndSendToken = async (user) => {
 
         const response = {
             AccessToken: token,
-            username: user.name,
+            fullName: user.fullName,
             email: user.email,
             userId: user._id,
             role: user.role,
