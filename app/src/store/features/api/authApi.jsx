@@ -1,4 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { notifications } from '@mantine/notifications';
+import { FaCheckCircle } from 'react-icons/fa';
+import { VscError } from 'react-icons/vsc';
 
 const authApi = createApi({
     reducerPath: 'authApi',
@@ -13,12 +16,43 @@ const authApi = createApi({
         return {
             registerUser: builder.mutation({
                 query: (args) => {
-                    console.log(args)
                     return {
                         url: '/users/register',
                         method: 'POST',
                         body: args,
                     };
+                },
+                async onQueryStarted(data, { queryFulfilled }) {
+                    const id = notifications.show({
+                        loading: true,
+                        title: 'Register',
+                        message: 'Registration in progress',
+                        autoClose: false,
+                        withCloseButton: false,
+                    });
+                    try {
+                        await queryFulfilled;
+                        notifications.update({
+                            id,
+                            color: 'teal',
+                            title: 'Register',
+                            message: 'Registration is successful please wait for approval',
+                            icon: <FaCheckCircle style={{ width: '40px', height: '40px' }} />,
+                            loading: false,
+                            autoClose: false,
+                            withCloseButton: true,
+                        });
+                    } catch (error) {
+                        notifications.update({
+                            id,
+                            color: 'red',
+                            title: 'Register',
+                            message: 'error',
+                            icon: <VscError style={{ width: '40px', height: '40px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                        });
+                    }
                 },
             }),
         };
