@@ -1,8 +1,9 @@
-import { AppShell, Button } from '@mantine/core';
+import { AppShell } from '@mantine/core';
 import Header from './Header';
 import { Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useDisclosure } from '@mantine/hooks';
+import Navigation from './Navigation';
 
 const AppShellLayout = () => {
     const userData = useSelector((state) => state.auth.user);
@@ -17,7 +18,7 @@ const AppShellLayout = () => {
             </AppShell.Header>
             {userData && (
                 <AppShell.Navbar>
-                    <Button>hi</Button>
+                    <Navigation role={userData.role} />
                 </AppShell.Navbar>
             )}
             <AppShell.Main>

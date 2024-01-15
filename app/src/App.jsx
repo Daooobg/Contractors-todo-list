@@ -5,6 +5,7 @@ import LoginPage from './components/auth/LoginPage';
 import RegisterPage from './components/auth/RegisterPage';
 import Dashboard from './components/dashboard/Dashboard';
 import AppShellLayout from './components/layouts/AppShellLayout';
+import UsersVerificationsPage from './components/dashboard/usersVerifications/UsersVerificationsPage';
 
 const router = createBrowserRouter([
     {
@@ -15,7 +16,16 @@ const router = createBrowserRouter([
             { index: true, element: <HomePage /> },
             { path: 'auth/login', element: <LoginPage /> },
             { path: 'auth/register', element: <RegisterPage /> },
-            { path: '/dashboard', element: <Dashboard /> },
+            {
+                path: 'dashboard',
+                children: [
+                    { index: true, element: <Dashboard /> },
+                    {
+                        path: 'usersVerifications',
+                        element: <UsersVerificationsPage />,
+                    },
+                ],
+            },
         ],
     },
 ]);
