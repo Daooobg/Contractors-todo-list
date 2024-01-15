@@ -1,7 +1,20 @@
 import { Button, Card, Center, PasswordInput, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { useNavigate } from 'react-router-dom';
+
+import { useLoginUserMutation } from '../../store/features/api/authApi';
+import { useEffect } from 'react';
 
 const LoginPage = () => {
+    const [loginUser, { isSuccess: isLoginSuccess }] = useLoginUserMutation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isLoginSuccess) {
+            navigate('/dashboard');
+        }
+    });
+
     const form = useForm({
         initialValues: {
             email: '',
@@ -20,7 +33,7 @@ const LoginPage = () => {
     });
 
     const submitHandler = (data) => {
-        console.log(data);
+        loginUser(data);
     };
 
     return (
