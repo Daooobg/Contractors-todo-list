@@ -37,7 +37,7 @@ const authApi = createApi({
                             color: 'teal',
                             title: 'Register',
                             message: 'Registration is successful please wait for approval',
-                            icon: <FaCheckCircle style={{ width: '40px', height: '40px' }} />,
+                            icon: <FaCheckCircle style={{ width: '30px', height: '30px' }} />,
                             loading: false,
                             autoClose: false,
                             withCloseButton: true,
@@ -48,7 +48,48 @@ const authApi = createApi({
                             color: 'red',
                             title: 'Register',
                             message: error.error.data,
-                            icon: <VscError style={{ width: '40px', height: '40px' }} />,
+                            icon: <VscError style={{ width: '30px', height: '30px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                        });
+                    }
+                },
+            }),
+            loginUser: builder.mutation({
+                query: (args) => {
+                    return {
+                        url: '/users/login',
+                        method: 'POST',
+                        body: args,
+                    };
+                },
+                async onQueryStarted(data, { queryFulfilled }) {
+                    const id = notifications.show({
+                        loading: true,
+                        title: 'Login',
+                        message: 'Login in progress',
+                        autoClose: false,
+                        withCloseButton: false,
+                    });
+                    try {
+                        await queryFulfilled;
+                        notifications.update({
+                            id,
+                            color: 'teal',
+                            title: 'Login',
+                            message: 'Login successfully',
+                            icon: <FaCheckCircle style={{ width: '30px', height: '30px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                            withCloseButton: true,
+                        });
+                    } catch (error) {
+                        notifications.update({
+                            id,
+                            color: 'red',
+                            title: 'Login',
+                            message: error.error.data,
+                            icon: <VscError style={{ width: '30px', height: '30px' }} />,
                             loading: false,
                             autoClose: 3000,
                         });
@@ -59,5 +100,5 @@ const authApi = createApi({
     },
 });
 
-export const { useRegisterUserMutation } = authApi;
+export const { useRegisterUserMutation, useLoginUserMutation } = authApi;
 export { authApi };
