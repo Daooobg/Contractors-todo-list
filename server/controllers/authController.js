@@ -1,13 +1,12 @@
 const authService = require('../services/authService');
+const { default: AppError } = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
 
 exports.register = catchAsync(async (req, res, next) => {
     const { fullName, email, password, role } = req.body;
-    console.log(req.body)
 
     if (!email || !password || !fullName || !role) {
-        console.log('All fields are required');
-        return;
+        return next(new AppError('All fields are required', 400, req.body));
     }
 
     const token = await authService.register(fullName, email, password, role);
