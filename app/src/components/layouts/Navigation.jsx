@@ -1,19 +1,25 @@
 import { NavLink } from '@mantine/core';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Navigation = ({ role }) => {
     const navigate = useNavigate();
-    const [activeLink, setActiveLInk] = useState();
+    const location = useLocation();
+    const locationPath = location.pathname.split('/');
+
+    const [activeLink, setActiveLInk] = useState(
+        locationPath[locationPath.length - 1].toLowerCase()
+    );
     return (
         <>
             {role === 'Admin' && (
                 <NavLink
                     variant='filled'
-                    active={activeLink === 'verification'}
+                    active={activeLink === 'usersverifications'}
                     label='Users Verification'
                     onClick={() => {
-                        setActiveLInk('verification'), navigate('/dashboard/usersVerifications');
+                        setActiveLInk('usersverifications'),
+                            navigate('/dashboard/usersVerifications');
                     }}
                 />
             )}
