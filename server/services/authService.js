@@ -29,8 +29,10 @@ const createAndSendToken = async (user) => {
     }
 };
 
+const getUserByEmail = (email) => User.findOne({ email });
+
 exports.register = async (fullName, email, password, role) => {
-    console.log(fullName, email, password, role)
+    console.log(fullName, email, password, role);
     const user = await User.create({ fullName, email, password, role });
     return createAndSendToken(user);
 };
