@@ -178,6 +178,48 @@ const authApi = createApi({
             getAllApprovedUsers: builder.query({
                 query: () => ({ url: '/users/allApprovedUsers' }),
             }),
+            updateUser: builder.mutation({
+                query: (data) => ({ url: '/users/allApprovedUsers', method: 'POST', body: data }),
+                async onQueryStarted(data, { dispatch, queryFulfilled }) {
+                    try {
+                        await queryFulfilled;
+
+                        notifications.show({
+                            color: 'teal',
+                            title: 'Update user',
+                            message: 'Successfully update the user',
+                            icon: <FaCheckCircle style={{ width: '30px', height: '30px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                            withCloseButton: true,
+                        });
+                        dispatch(
+                            authApi.util.updateQueryData(
+                                'getAllApprovedUsers',
+                                undefined,
+                                (draftData) => {
+                                    return draftData?.map((user) => {
+                                        if (user._id === data.id) {
+                                            user.disabled = data.disabled;
+                                            user.role = data.role;
+                                        }
+                                        return user;
+                                    });
+                                }
+                            )
+                        );
+                    } catch (error) {
+                        notifications.show({
+                            color: 'red',
+                            title: 'Update user',
+                            message: error.error.data,
+                            icon: <VscError style={{ width: '30px', height: '30px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                        });
+                    }
+                },
+            }),
         };
     },
 });
@@ -189,5 +231,6 @@ export const {
     useApproveUserMutation,
     useDeleteUserMutation,
     useGetAllApprovedUsersQuery,
+    useUpdateUserMutation,
 } = authApi;
 export { authApi };
