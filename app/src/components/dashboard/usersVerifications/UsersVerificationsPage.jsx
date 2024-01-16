@@ -1,4 +1,4 @@
-import { Flex } from '@mantine/core';
+import { Center, Flex, Text } from '@mantine/core';
 import { useGetAllUsersForVerificationQuery } from '../../../store/features/api/authApi';
 import UsersVerificationsCard from './UsersVerificationsCard';
 
@@ -14,7 +14,11 @@ const UsersVerificationsPage = () => {
                         <UsersVerificationsCard user={user} key={user._id} />
                     ))}
             </Flex>
-            {isSuccess && usersForVerification.length === 0 && <h1>There is not users</h1>}
+            {isSuccess && usersForVerification.length === 0 && (
+                <Center mt={100}>
+                    <Text size='xl'>There is not users for approval</Text>
+                </Center>
+            )}
         </>
     );
 };
