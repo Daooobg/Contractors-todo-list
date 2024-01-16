@@ -110,3 +110,10 @@ exports.deleteUser = async ({ id }) => {
         throw new AppError('Failed to delete user', 400, { _id: id, error });
     }
 };
+
+exports.getAllApprovedUsers = () => {
+    return User.find({
+        role: { $nin: ['Admin'] },
+        approved: true,
+    }).select('-password -__v -approved');
+};

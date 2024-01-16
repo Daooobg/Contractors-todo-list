@@ -72,3 +72,9 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
 
     res.status(204).end();
 });
+
+exports.getAllApprovedUsers = catchAsync(async (req, res, next) => {
+    const users = await authService.getAllApprovedUsers();
+
+    res.status(200).json(users);
+});
