@@ -1,12 +1,20 @@
 .root {
     &[data-variant='danger'] {
         @mixin dark {
-            background-color: var(--mantine-color-red-9);
+            background-color: var(--mantine-color-red-8);
         }
 
         @mixin light {
             background-color: var(--mantine-color-red-7);
         }
         color: var(--mantine-color-red-0);
+    }
+    &[data-variant='danger']:hover {
+        @mixin dark {
+            background-color: var(--mantine-color-red-9);
+        }
+        @mixin light {
+            background-color: var(--mantine-color-red-8);
+        }
     }
 }
