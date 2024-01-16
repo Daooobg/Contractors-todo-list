@@ -105,9 +105,49 @@ const authApi = createApi({
             getAllUsersForVerification: builder.query({
                 query: () => ({ url: '/users/usersVerifications' }),
             }),
+            approveUser: builder.mutation({
+                query: (id) => ({ url: '/users/approveUser', method: 'POST', body: { id } }),
+                async onQueryStarted(data, { queryFulfilled, dispatch }) {
+                    try {
+                        await queryFulfilled;
+                        dispatch(
+                            authApi.util.updateQueryData(
+                                'getAllUsersForVerification',
+                                undefined,
+                                (draftData) => {
+                                    return draftData?.filter((user) => user._id !== data);
+                                }
+                            )
+                        );
+                        notifications.show({
+                            color: 'teal',
+                            title: 'Register',
+                            message: 'Successfully approve the user',
+                            icon: <FaCheckCircle style={{ width: '30px', height: '30px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                            withCloseButton: true,
+                        });
+                    } catch (error) {
+                        notifications.show({
+                            color: 'red',
+                            title: 'Register',
+                            message: error.error.data,
+                            icon: <VscError style={{ width: '30px', height: '30px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                        });
+                    }
+                },
+            }),
         };
     },
 });
 
-export const { useRegisterUserMutation, useLoginUserMutation, useGetAllUsersForVerificationQuery } = authApi;
+export const {
+    useRegisterUserMutation,
+    useLoginUserMutation,
+    useGetAllUsersForVerificationQuery,
+    useApproveUserMutation,
+} = authApi;
 export { authApi };
