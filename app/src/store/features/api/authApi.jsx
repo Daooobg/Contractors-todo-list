@@ -175,6 +175,9 @@ const authApi = createApi({
                     }
                 },
             }),
+            getAllApprovedUsers: builder.query({
+                query: () => ({ url: '/users/allApprovedUsers' }),
+            }),
         };
     },
 });
@@ -185,5 +188,6 @@ export const {
     useGetAllUsersForVerificationQuery,
     useApproveUserMutation,
     useDeleteUserMutation,
+    useGetAllApprovedUsersQuery,
 } = authApi;
 export { authApi };
