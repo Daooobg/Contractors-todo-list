@@ -47,10 +47,28 @@ exports.updateUserApprove = catchAsync(async (req, res, next) => {
     const id = req.body;
 
     if (!id) {
-        return next(new AppError('Something went wrong', 401, req.body));
+        return next(new AppError('Something went wrong', 400, req.body));
     }
 
     await authService.updateUserApprove(id);
 
     res.status(204).json();
+});
+
+exports.deleteUser = catchAsync(async (req, res, next) => {
+    const user = req.user;
+
+    if (user.role !== 'Admin' && user.role !== 'Owner') {
+        return next(new AppError('Unauthorized', 401, req.body));
+    }
+
+    const id = req.body;
+
+    if (!id) {
+        return next(new AppError('Something went wrong', 400, req.body));
+    }
+
+    await authService.deleteUser(id);
+
+    res.status(204).end();
 });

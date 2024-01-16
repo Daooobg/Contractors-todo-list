@@ -91,6 +91,22 @@ exports.updateUserApprove = async ({ id }) => {
             message: 'User approved successfully',
         };
     } catch (error) {
-        throw new AppError('Failed to update user approval', 500, { _id: id, error });
+        throw new AppError('Failed to update user approval', 400, { _id: id, error });
+    }
+};
+
+exports.deleteUser = async ({ id }) => {
+    try {
+        const deletedUser = await User.findByIdAndDelete(id);
+
+        if (!deletedUser) {
+            throw new AppError('User not found', 404, { _id: id });
+        }
+        return {
+            success: true,
+            message: 'User deleted successfully',
+        };
+    } catch (error) {
+        throw new AppError('Failed to delete user', 400, { _id: id, error });
     }
 };
