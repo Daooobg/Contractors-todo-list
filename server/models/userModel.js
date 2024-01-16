@@ -29,6 +29,10 @@ const userSchema = new Schema({
         type: Boolean,
         default: false,
     },
+    disabled: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 userSchema.pre('save', async function (next) {
