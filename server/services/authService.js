@@ -117,3 +117,25 @@ exports.getAllApprovedUsers = () => {
         approved: true,
     }).select('-password -__v -approved');
 };
+
+exports.updateUser = async (data) => {
+    try {
+        const user = await getUserById(data.id);
+
+        if (!user) {
+            throw new AppError('User not found', 404, { data });
+        }
+
+        user.disabled = data.disabled;
+        user.role = data.role;
+
+        await user.save();
+
+        return {
+            success: true,
+            message: 'User approved successfully',
+        };
+    } catch (error) {
+        throw new AppError('Failed to update user', 400, { _id: id, error });
+    }
+};

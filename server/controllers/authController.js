@@ -78,3 +78,15 @@ exports.getAllApprovedUsers = catchAsync(async (req, res, next) => {
 
     res.status(200).json(users);
 });
+
+exports.updateUser = catchAsync(async (req, res, next) => {
+    const data = req.body;
+
+    if (!data) {
+        return next(new AppError('Something went wrong', 400, req.body));
+    }
+
+    await authService.updateUser(data);
+
+    res.status(204).end();
+});
