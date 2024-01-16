@@ -121,7 +121,7 @@ const authApi = createApi({
                         );
                         notifications.show({
                             color: 'teal',
-                            title: 'Register',
+                            title: 'Approve user',
                             message: 'Successfully approve the user',
                             icon: <FaCheckCircle style={{ width: '30px', height: '30px' }} />,
                             loading: false,
@@ -131,7 +131,42 @@ const authApi = createApi({
                     } catch (error) {
                         notifications.show({
                             color: 'red',
-                            title: 'Register',
+                            title: 'Approve user',
+                            message: error.error.data,
+                            icon: <VscError style={{ width: '30px', height: '30px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                        });
+                    }
+                },
+            }),
+            deleteUser: builder.mutation({
+                query: (id) => ({ url: '/users/deleteUserData', method: 'POST', body: { id } }),
+                async onQueryStarted(data, { queryFulfilled, dispatch }) {
+                    try {
+                        await queryFulfilled;
+                        dispatch(
+                            authApi.util.updateQueryData(
+                                'getAllUsersForVerification',
+                                undefined,
+                                (draftData) => {
+                                    return draftData?.filter((user) => user._id !== data);
+                                }
+                            )
+                        );
+                        notifications.show({
+                            color: 'teal',
+                            title: 'Delete user',
+                            message: 'Successfully delete the user',
+                            icon: <FaCheckCircle style={{ width: '30px', height: '30px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                            withCloseButton: true,
+                        });
+                    } catch (error) {
+                        notifications.show({
+                            color: 'red',
+                            title: 'Delete user',
                             message: error.error.data,
                             icon: <VscError style={{ width: '30px', height: '30px' }} />,
                             loading: false,
@@ -149,5 +184,6 @@ export const {
     useLoginUserMutation,
     useGetAllUsersForVerificationQuery,
     useApproveUserMutation,
+    useDeleteUserMutation,
 } = authApi;
 export { authApi };
