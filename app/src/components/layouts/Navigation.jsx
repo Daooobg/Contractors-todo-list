@@ -12,16 +12,27 @@ const Navigation = ({ role }) => {
     );
     return (
         <>
-            {role === 'Admin' && (
-                <NavLink
-                    variant='filled'
-                    active={activeLink === 'usersverifications'}
-                    label='Users Verification'
-                    onClick={() => {
-                        setActiveLInk('usersverifications'),
-                            navigate('/dashboard/usersVerifications');
-                    }}
-                />
+            {(role === 'Admin' || role === 'Owner') && (
+                <>
+                    <NavLink
+                        variant='filled'
+                        active={activeLink === 'usersverifications'}
+                        label='Users Verification'
+                        onClick={() => {
+                            setActiveLInk('usersverifications'),
+                                navigate('/dashboard/usersVerifications');
+                        }}
+                    />
+                    <NavLink
+                        variant='filled'
+                        active={activeLink === 'changeusersdata'}
+                        label='Change Users'
+                        onClick={() => {
+                            setActiveLInk('changeusersdata'),
+                                navigate('/dashboard/changeUsersData');
+                        }}
+                    ></NavLink>
+                </>
             )}
         </>
     );
