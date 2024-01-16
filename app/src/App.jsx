@@ -6,6 +6,7 @@ import RegisterPage from './components/auth/RegisterPage';
 import Dashboard from './components/dashboard/Dashboard';
 import AppShellLayout from './components/layouts/AppShellLayout';
 import UsersVerificationsPage from './components/dashboard/usersVerifications/UsersVerificationsPage';
+import ChangeUsersPage from './components/dashboard/changeUsers/ChangeUsersPage';
 
 const router = createBrowserRouter([
     {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
                     {
                         path: 'usersVerifications',
                         element: <UsersVerificationsPage />,
+                    },
+                    {
+                        path: 'changeUsersData',
+                        element: <ChangeUsersPage />,
                     },
                 ],
             },
