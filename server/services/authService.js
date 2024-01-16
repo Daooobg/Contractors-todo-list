@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const User = require('../models/userModel');
 const jwt = require('../lib/jsonwebtoken');
 const AppError = require('../utils/AppError');
+const { emailService } = require('./emailService');
 
 dotenv.config({ path: './config.env' });
 
@@ -32,6 +33,8 @@ const createAndSendToken = async (user) => {
 
 const getUserByEmail = (email) => User.findOne({ email });
 
+const getUserById = (_id) => User.findById({ _id });
+
 exports.getNonAdminNonOwnerUnapprovedUsers = () => {
     return User.find({
         role: { $nin: ['Admin'] },
@@ -40,7 +43,6 @@ exports.getNonAdminNonOwnerUnapprovedUsers = () => {
 };
 
 exports.register = async (fullName, email, password, role) => {
-    console.log(fullName, email, password, role);
     const user = await User.create({ fullName, email, password, role });
     return createAndSendToken(user);
 };
@@ -62,4 +64,33 @@ exports.login = async (email, password) => {
     }
 
     return createAndSendToken(user);
+};
+
+exports.updateUserApprove = async ({ id }) => {
+    try {
+        const user = await getUserById(id);
+
+        if (!user) {
+            throw new AppError('User not found', 404, { _id: id });
+        }
+
+        user.approved = true;
+
+        await user.save();
+
+        const emailDetails = {
+            to: user.email,
+            subject: 'Account approval',
+            text: 'Congratulations, your account is approved. Now you can log in.',
+        };
+
+        await emailService(emailDetails);
+
+        return {
+            success: true,
+            message: 'User approved successfully',
+        };
+    } catch (error) {
+        throw new AppError('Failed to update user approval', 500, { _id: id, error });
+    }
 };
