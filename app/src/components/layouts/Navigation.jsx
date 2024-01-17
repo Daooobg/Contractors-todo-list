@@ -34,6 +34,18 @@ const Navigation = ({ role }) => {
                     ></NavLink>
                 </>
             )}
+            {(role === 'Owner' || role === 'Agent') && (
+                <>
+                    <NavLink
+                        variant='filled'
+                        active={activeLink === 'addnewjob'}
+                        label='Add New job'
+                        onClick={() => {
+                            setActiveLInk('addnewjob'), navigate('/dashboard/addNewJob');
+                        }}
+                    />
+                </>
+            )}
         </>
     );
 };
