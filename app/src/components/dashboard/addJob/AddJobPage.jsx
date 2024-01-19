@@ -10,7 +10,7 @@ const AddJobPage = () => {
         <Center mt={80}>
             <Stack>
                 <AddJobProgress step={currentStep} />
-                <Card w={300} shadow='sm' padding='lg' radius='md' withBorder>
+                <Card w={400} shadow='sm' padding='lg' radius='md' withBorder>
                     <Stack>
                         <Text tt={'capitalize'} fz='xl' fw={900} mx='auto'>
                             Create new job
