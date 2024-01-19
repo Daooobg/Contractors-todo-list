@@ -1,16 +1,35 @@
-import { Autocomplete, Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
+import { Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import { useState } from 'react';
-import { useAddAddressMutation } from '../../../store/features/api/jobsApi';
+import { useEffect, useMemo, useState } from 'react';
+import { useAddAddressMutation, useGetAddressQuery } from '../../../store/features/api/jobsApi';
+import AddressForm from './AddressForm';
 
 const AddAddress = () => {
-    const [searchValue, setSearchValue] = useState();
+    const [searchValue, setSearchValue] = useState('');
+    const [labelAddresses, setLabelAddresses] = useState([]);
+    const [skip, setSkip] = useState(true);
     const [opened, { open, close }] = useDisclosure(false);
     const [contactDetails, setContactDetails] = useState([]);
     const [addAddress] = useAddAddressMutation();
+    const { data: allAddresses } = useGetAddressQuery(searchValue, { skip });
+    const [addresses, setAddresses] = useState([]);
 
-    const postcodeRegex = /^[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][ABD-HJLNP-UW-Z]{2}$/;
+    const postcodeRegex = useMemo(() => /^[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][ABD-HJLNP-UW-Z]{2}$/, []);
+
+    useEffect(() => {
+        if (postcodeRegex.test(searchValue) && allAddresses) {
+            const allFullLabelAddresses = allAddresses.map((a) => {
+                return { label: a.fullAddress, value: a._id };
+            });
+            setAddresses(allAddresses);
+            setLabelAddresses(allFullLabelAddresses);
+
+        } else {
+            setLabelAddresses([]);
+            setAddresses([]);
+        }
+    }, [allAddresses, postcodeRegex, searchValue]);
 
     const form = useForm({
         initialValues: {
@@ -63,6 +82,15 @@ const AddAddress = () => {
         setContactDetails([...contactDetails, { phoneNumber: '', name: '' }]);
     };
 
+    const searchHandler = (e) => {
+        setSearchValue(e.currentTarget.value.toUpperCase());
+        const isValidPostcode = postcodeRegex.test(e.currentTarget.value.toUpperCase());
+        if (isValidPostcode) {
+            setSkip(false);
+        } else {
+            setSkip(true);
+        }
+    };
     return (
         <>
             <Modal opened={opened} onClose={close} title='Add new address'>
@@ -92,13 +120,15 @@ const AddAddress = () => {
                     </Stack>
                 </form>
             </Modal>
-            <Autocomplete
+            <TextInput
                 label='Postcode:'
                 placeholder='RM8 2FW'
                 value={searchValue}
-                onChange={(v) => setSearchValue(v.toUpperCase())}
+                onChange={searchHandler}
             />
-            <Button onClick={open}>Add new address</Button>
+            <AddressForm open={open} addresses={labelAddresses} allAddresses={addresses} />
+
+            {allAddresses && allAddresses.length === 0 && <Button onClick={open}>Add new address</Button>}
         </>
     );
 };
