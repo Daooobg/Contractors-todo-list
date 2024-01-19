@@ -14,3 +14,15 @@ exports.addAddress = catchAsync(async (req, res, next) => {
 
     res.status(204).end();
 });
+
+exports.getAddressByPostcode = catchAsync(async (req, res, next) => {
+    const {postcode} = req.params;
+
+    if (!postcode) {
+        return next(new AppError('Please send postcode', 400, req.body));
+    }
+
+    const addresses = await jobService.getAddressByPostcode(postcode);
+
+    res.status(200).json(addresses);
+});

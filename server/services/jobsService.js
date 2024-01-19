@@ -5,3 +5,9 @@ exports.addAddress = async (data) => {
 
     return address;
 };
+
+exports.getAddressByPostcode = async (postcode) => {
+    const addresses = await Address.find({ postcode: postcode }).select('-__v');
+
+    return addresses;
+};
