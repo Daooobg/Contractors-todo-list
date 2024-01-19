@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const jobsApi = createApi({
-    reducerPath: 'authApi',
+    reducerPath: 'jobsApi',
     baseQuery: fetchBaseQuery({
         baseUrl: import.meta.env.VITE_BASE_URL,
         prepareHeaders: async (headers, { getState }) => {
@@ -26,9 +26,12 @@ const jobsApi = createApi({
                     };
                 },
             }),
+            getAddress: builder.query({
+                query: (postcode) => ({ url: `/jobs/getAddressByPostcode/${postcode}` }),
+            }),
         };
     },
 });
 
-export const { useAddAddressMutation } = jobsApi;
+export const { useAddAddressMutation, useGetAddressQuery } = jobsApi;
 export { jobsApi };
