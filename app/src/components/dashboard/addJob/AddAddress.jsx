@@ -126,7 +126,7 @@ const AddAddress = () => {
                 value={searchValue}
                 onChange={searchHandler}
             />
-            <AddressForm open={open} addresses={labelAddresses} allAddresses={addresses} />
+            <AddressForm open={open} addresses={labelAddresses} allAddresses={addresses} postcode={searchValue} />
 
             {allAddresses && allAddresses.length === 0 && <Button onClick={open}>Add new address</Button>}
         </>
