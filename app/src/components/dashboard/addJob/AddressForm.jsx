@@ -3,14 +3,17 @@ import { useEffect, useState } from 'react';
 
 import { MdOutlineEdit } from 'react-icons/md';
 import { GiConfirmed } from 'react-icons/gi';
+import { useAddNewContactMutation } from '../../../store/features/api/jobsApi';
 
-const AddressForm = ({ addresses, open, allAddresses }) => {
+const AddressForm = ({ addresses, open, allAddresses, postcode }) => {
     const [selectedValue, setSelectedValue] = useState(undefined);
     const [disabledContacts, setDisabledContacts] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState([]);
     const [contactDetails, setContactDetails] = useState([]);
 
-    console.log(contactDetails)
+    const [addNewContact] = useAddNewContactMutation();
+
+    console.log(contactDetails);
     useEffect(() => {
         if (!allAddresses.some((address) => address._id === selectedValue)) {
             setSelectedValue(undefined);
@@ -74,8 +77,8 @@ const AddressForm = ({ addresses, open, allAddresses }) => {
                     </Group>
                     {selectedAddress &&
                         contactDetails &&
-                        contactDetails.map((contact, inx) => (
-                            <Stack mt={20} key={contact.name + selectedAddress._id + inx}>
+                        contactDetails.map((_, inx) => (
+                            <Stack mt={20} key={selectedAddress._id + inx}>
                                 <Group wrap='nowrap'>
                                     <TextInput
                                         disabled={!disabledContacts[inx]}
@@ -110,7 +113,18 @@ const AddressForm = ({ addresses, open, allAddresses }) => {
                                             );
                                         }}
                                     />
-                                    <Button onClick={() => handleEditClick(inx)}>
+                                    <Button
+                                        onClick={() => {
+                                            handleEditClick(inx);
+                                            if (disabledContacts[inx]) {
+                                                addNewContact({
+                                                    addressId: selectedValue,
+                                                    contact: contactDetails[inx],
+                                                    postcode,
+                                                });
+                                            }
+                                        }}
+                                    >
                                         {!disabledContacts[inx] ? (
                                             <MdOutlineEdit
                                                 style={{ width: '30px', height: '30px' }}
