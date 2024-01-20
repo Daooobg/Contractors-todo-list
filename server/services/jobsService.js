@@ -54,3 +54,30 @@ exports.deleteContact = async (addressId, contactId) => {
         throw new AppError(error);
     }
 };
+
+exports.editContact = async (addressId, contactDetails) => {
+    try {
+        const address = await findAddressById(addressId);
+
+        if (!address) {
+            throw new AppError('Address not found');
+        }
+
+        address.contactDetails = address.contactDetails || [];
+        address.contactDetails = address.contactDetails.map((contact) => {
+            if (contact._id.toString() === contactDetails._id) {
+                contact.name = contactDetails.name;
+                contact.phoneNumber = contactDetails.phoneNumber;
+            }
+            return contact;
+        });
+
+        await address.save();
+
+        return {
+            message: 'Updated successfully',
+        };
+    } catch (error) {
+        throw new AppError(error);
+    }
+};

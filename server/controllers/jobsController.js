@@ -65,3 +65,23 @@ exports.deleteContact = catchAsync(async (req, res, next) => {
         return next(new AppError(error));
     }
 });
+
+exports.editContact = catchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    const contactDetails = req.body;
+
+    if (!id) {
+        return next(new AppError('Please send address id', 400));
+    }
+
+    if (!contactDetails || Object.keys(contactDetails).length === 0) {
+        return next(new AppError('Please send new contact details', 400));
+    }
+
+    try {
+        await jobService.editContact(id, contactDetails);
+        res.status(204).end();
+    } catch (error) {
+        return next(new AppError(error));
+    }
+});
