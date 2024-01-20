@@ -35,8 +35,8 @@ exports.addNewContact = catchAsync(async (req, res, next) => {
         return next(new AppError('Please send address id', 400));
     }
 
-    if (!newContact) {
-        return next(new AppError('Please send contact details', 400))
+    if (!newContact || Object.keys(newContact).length === 0) {
+        return next(new AppError('Please send contact details', 400));
     }
     try {
         const contactId = await jobService.addNewContact(id, newContact);
