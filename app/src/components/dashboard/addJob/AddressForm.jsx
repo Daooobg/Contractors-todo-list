@@ -58,7 +58,7 @@ const AddressForm = ({ addresses, open, allAddresses, postcode, addNewAddressFor
     };
 
     return (
-        <form>
+        <>
             {allAddresses.length > 0 && (
                 <>
                     <Select
@@ -190,7 +190,7 @@ const AddressForm = ({ addresses, open, allAddresses, postcode, addNewAddressFor
                         ))}
                 </>
             )}
-        </form>
+        </>
     );
 };
 
