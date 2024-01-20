@@ -28,6 +28,34 @@ const jobsApi = createApi({
                         body: args,
                     };
                 },
+                async onQueryStarted(data, { queryFulfilled, dispatch }) {
+                    try {
+                        const newAddress = await queryFulfilled;
+                        dispatch(
+                            jobsApi.util.updateQueryData('getAddress', data.postcode, (draft) => {
+                                draft.push(newAddress.data);
+                            })
+                        );
+                        notifications.show({
+                            color: 'teal',
+                            title: 'New address',
+                            message: 'Successfully add new address',
+                            icon: <FaCheckCircle style={{ width: '30px', height: '30px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                            withCloseButton: true,
+                        });
+                    } catch (error) {
+                        notifications.show({
+                            color: 'red',
+                            title: 'New address',
+                            message: error.error.data,
+                            icon: <VscError style={{ width: '30px', height: '30px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                        });
+                    }
+                },
             }),
             getAddress: builder.query({
                 query: (postcode) => ({ url: `/jobs/getAddressByPostcode/${postcode}` }),
