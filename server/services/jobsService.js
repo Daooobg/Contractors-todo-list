@@ -33,3 +33,24 @@ exports.addNewContact = async (addressId, newContact) => {
         throw new AppError(error);
     }
 };
+
+exports.deleteContact = async (addressId, contactId) => {
+    try {
+        const address = await findAddressById(addressId);
+
+        if (!address) {
+            throw new AppError('Address not found');
+        }
+
+        address.contactDetails = address.contactDetails || [];
+        address.contactDetails = address.contactDetails.filter((contact) => contact._id.toString() !== contactId);
+
+        await address.save();
+
+        return {
+            message: 'Deleted successfully',
+        };
+    } catch (error) {
+        throw new AppError(error);
+    }
+};
