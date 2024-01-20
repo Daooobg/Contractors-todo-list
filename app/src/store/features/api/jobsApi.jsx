@@ -149,6 +149,58 @@ const jobsApi = createApi({
                     }
                 },
             }),
+            editContact: builder.mutation({
+                query: (args) => {
+                    console.log(args);
+                    return {
+                        url: `/jobs/contacts/${args.addressId}`,
+                        method: 'POST',
+                        body: args.contact,
+                    };
+                },
+                async onQueryStarted(data, { queryFulfilled, dispatch }) {
+                    const editedContact = dispatch(
+                        jobsApi.util.updateQueryData('getAddress', data.postcode, (draft) => {
+                            draft.filter((address) => {
+                                if (address._id == data.addressId) {
+                                    address.contactDetails = address.contactDetails.map(
+                                        (contact) => {
+                                            if ((contact._id = data.contact._id)) {
+                                                contact.name = data.contact.name;
+                                                contact.phoneNumber = data.contact.phoneNumber;
+                                            }
+                                            return contact;
+                                        }
+                                    );
+                                }
+                                return address;
+                            });
+                        })
+                    );
+                    try {
+                        await queryFulfilled;
+                        notifications.show({
+                            color: 'teal',
+                            title: 'Contact details',
+                            message: 'Successfully update the contact',
+                            icon: <FaCheckCircle style={{ width: '30px', height: '30px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                            withCloseButton: true,
+                        });
+                    } catch (error) {
+                        editedContact.undo();
+                        notifications.show({
+                            color: 'red',
+                            title: 'Contact details',
+                            message: error.error.data,
+                            icon: <VscError style={{ width: '30px', height: '30px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                        });
+                    }
+                },
+            }),
         };
     },
 });
@@ -158,5 +210,6 @@ export const {
     useGetAddressQuery,
     useAddNewContactMutation,
     useDeleteContactMutation,
+    useEditContactMutation,
 } = jobsApi;
 export { jobsApi };
