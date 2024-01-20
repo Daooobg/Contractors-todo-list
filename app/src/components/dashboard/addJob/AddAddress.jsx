@@ -24,7 +24,6 @@ const AddAddress = () => {
             });
             setAddresses(allAddresses);
             setLabelAddresses(allFullLabelAddresses);
-
         } else {
             setLabelAddresses([]);
             setAddresses([]);
@@ -126,9 +125,24 @@ const AddAddress = () => {
                 value={searchValue}
                 onChange={searchHandler}
             />
-            <AddressForm open={open} addresses={labelAddresses} allAddresses={addresses} postcode={searchValue} />
+            <AddressForm
+                open={open}
+                addresses={labelAddresses}
+                allAddresses={addresses}
+                postcode={searchValue}
+                addNewAddressForm={form}
+            />
 
-            {allAddresses && allAddresses.length === 0 && <Button onClick={open}>Add new address</Button>}
+            {allAddresses && allAddresses.length === 0 && (
+                <Button
+                    onClick={() => {
+                        form.setValues({ postcode: searchValue });
+                        open();
+                    }}
+                >
+                    Add new address
+                </Button>
+            )}
         </>
     );
 };

@@ -5,7 +5,7 @@ import { MdOutlineEdit } from 'react-icons/md';
 import { GiConfirmed } from 'react-icons/gi';
 import { useAddNewContactMutation } from '../../../store/features/api/jobsApi';
 
-const AddressForm = ({ addresses, open, allAddresses, postcode }) => {
+const AddressForm = ({ addresses, open, allAddresses, postcode, addNewAddressForm }) => {
     const [selectedValue, setSelectedValue] = useState(undefined);
     const [disabledContacts, setDisabledContacts] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState([]);
@@ -13,7 +13,6 @@ const AddressForm = ({ addresses, open, allAddresses, postcode }) => {
 
     const [addNewContact] = useAddNewContactMutation();
 
-    console.log(contactDetails);
     useEffect(() => {
         if (!allAddresses.some((address) => address._id === selectedValue)) {
             setSelectedValue(undefined);
@@ -66,7 +65,14 @@ const AddressForm = ({ addresses, open, allAddresses, postcode }) => {
                         nothingFoundMessage={
                             <Stack>
                                 <Text size='lg'>Address not found!</Text>
-                                <Button onClick={open}>Add new address</Button>
+                                <Button
+                                    onClick={() => {
+                                        addNewAddressForm.setValues({ postcode });
+                                        open();
+                                    }}
+                                >
+                                    Add new address
+                                </Button>
                             </Stack>
                         }
                         searchable
