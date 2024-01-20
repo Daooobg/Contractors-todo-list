@@ -104,9 +104,59 @@ const jobsApi = createApi({
                     }
                 },
             }),
+            deleteContact: builder.mutation({
+                query: (args) => {
+                    return {
+                        url: `/jobs/contacts/${args.addressId}`,
+                        method: 'DELETE',
+                        body: args.contactId,
+                    };
+                },
+                async onQueryStarted(data, { queryFulfilled, dispatch }) {
+                    const deleteContact = dispatch(
+                        jobsApi.util.updateQueryData('getAddress', data.postcode, (draft) => {
+                            draft.filter((address) => {
+                                if (address._id == data.addressId) {
+                                    address.contactDetails = address.contactDetails.filter(
+                                        (contact) => contact._id != data.contactId.contactId
+                                    );
+                                }
+                                return address;
+                            });
+                        })
+                    );
+                    try {
+                        await queryFulfilled;
+                        notifications.show({
+                            color: 'teal',
+                            title: 'Contact details',
+                            message: 'Successfully delete the contact',
+                            icon: <FaCheckCircle style={{ width: '30px', height: '30px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                            withCloseButton: true,
+                        });
+                    } catch (error) {
+                        deleteContact.undo();
+                        notifications.show({
+                            color: 'red',
+                            title: 'Contact details',
+                            message: error.error.data,
+                            icon: <VscError style={{ width: '30px', height: '30px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                        });
+                    }
+                },
+            }),
         };
     },
 });
 
-export const { useAddAddressMutation, useGetAddressQuery, useAddNewContactMutation } = jobsApi;
+export const {
+    useAddAddressMutation,
+    useGetAddressQuery,
+    useAddNewContactMutation,
+    useDeleteContactMutation,
+} = jobsApi;
 export { jobsApi };
