@@ -1,4 +1,7 @@
+import { notifications } from '@mantine/notifications';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { FaCheckCircle } from 'react-icons/fa';
+import { VscError } from 'react-icons/vsc';
 
 const jobsApi = createApi({
     reducerPath: 'jobsApi',
@@ -29,9 +32,53 @@ const jobsApi = createApi({
             getAddress: builder.query({
                 query: (postcode) => ({ url: `/jobs/getAddressByPostcode/${postcode}` }),
             }),
+            addNewContact: builder.mutation({
+                query: (args) => {
+                    return {
+                        url: `/jobs/addNewContact/${args.addressId}`,
+                        method: 'POST',
+                        body: args.contact,
+                    };
+                },
+                async onQueryStarted(data, { queryFulfilled, dispatch }) {
+                    try {
+                        const id = await queryFulfilled;
+                        data.contact._id = id.data;
+                        dispatch(
+                            jobsApi.util.updateQueryData('getAddress', data.postcode, (draft) => {
+                                draft.map((address) => {
+                                    if (address._id === data.addressId) {
+                                        address.contactDetails.push(data.contact);
+                                    }
+                                    return address;
+                                });
+                                return draft;
+                            })
+                        );
+                        notifications.show({
+                            color: 'teal',
+                            title: 'Contact details',
+                            message: 'Successfully add new contact',
+                            icon: <FaCheckCircle style={{ width: '30px', height: '30px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                            withCloseButton: true,
+                        });
+                    } catch (error) {
+                        notifications.show({
+                            color: 'red',
+                            title: 'Contact details',
+                            message: error.error.data,
+                            icon: <VscError style={{ width: '30px', height: '30px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                        });
+                    }
+                },
+            }),
         };
     },
 });
 
-export const { useAddAddressMutation, useGetAddressQuery } = jobsApi;
+export const { useAddAddressMutation, useGetAddressQuery, useAddNewContactMutation } = jobsApi;
 export { jobsApi };
