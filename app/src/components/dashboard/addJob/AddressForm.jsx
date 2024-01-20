@@ -1,9 +1,13 @@
 import { Button, Group, Select, Stack, Text, TextInput } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
-import { MdOutlineEdit } from 'react-icons/md';
-import { GiConfirmed } from 'react-icons/gi';
-import { useAddNewContactMutation } from '../../../store/features/api/jobsApi';
+import { MdOutlineEdit, MdOutlineEditOff } from 'react-icons/md';
+
+import {
+    useAddNewContactMutation,
+    useDeleteContactMutation,
+    useEditContactMutation,
+} from '../../../store/features/api/jobsApi';
 
 const AddressForm = ({ addresses, open, allAddresses, postcode, addNewAddressForm }) => {
     const [selectedValue, setSelectedValue] = useState(undefined);
@@ -12,6 +16,8 @@ const AddressForm = ({ addresses, open, allAddresses, postcode, addNewAddressFor
     const [contactDetails, setContactDetails] = useState([]);
 
     const [addNewContact] = useAddNewContactMutation();
+    const [deleteContact] = useDeleteContactMutation();
+    const [editContact] = useEditContactMutation();
 
     useEffect(() => {
         if (!allAddresses.some((address) => address._id === selectedValue)) {
@@ -119,29 +125,67 @@ const AddressForm = ({ addresses, open, allAddresses, postcode, addNewAddressFor
                                             );
                                         }}
                                     />
-                                    <Button
-                                        onClick={() => {
-                                            handleEditClick(inx);
-                                            if (disabledContacts[inx]) {
-                                                addNewContact({
-                                                    addressId: selectedValue,
-                                                    contact: contactDetails[inx],
-                                                    postcode,
-                                                });
-                                            }
-                                        }}
-                                    >
+                                    <Button onClick={() => handleEditClick(inx)}>
                                         {!disabledContacts[inx] ? (
                                             <MdOutlineEdit
                                                 style={{ width: '30px', height: '30px' }}
                                             />
                                         ) : (
-                                            <GiConfirmed
+                                            <MdOutlineEditOff
                                                 style={{ width: '30px', height: '30px' }}
                                             />
                                         )}
                                     </Button>
                                 </Group>
+                                {disabledContacts[inx] && (
+                                    <Group>
+                                        {contactDetails[inx]._id ? (
+                                            <>
+                                                {' '}
+                                                <Button
+                                                    onClick={() => {
+                                                        handleEditClick(inx);
+                                                        editContact({
+                                                            addressId: selectedValue,
+                                                            contact: contactDetails[inx],
+                                                            postcode,
+                                                        });
+                                                    }}
+                                                >
+                                                    Edit
+                                                </Button>
+                                                <Button
+                                                    variant='danger'
+                                                    onClick={() => {
+                                                        handleEditClick(inx);
+                                                        deleteContact({
+                                                            addressId: selectedValue,
+                                                            contactId: {
+                                                                contactId: contactDetails[inx]._id,
+                                                            },
+                                                            postcode,
+                                                        });
+                                                    }}
+                                                >
+                                                    Delete
+                                                </Button>
+                                            </>
+                                        ) : (
+                                            <Button
+                                                onClick={() => {
+                                                    handleEditClick(inx);
+                                                    addNewContact({
+                                                        addressId: selectedValue,
+                                                        contact: contactDetails[inx],
+                                                        postcode,
+                                                    });
+                                                }}
+                                            >
+                                                Add
+                                            </Button>
+                                        )}
+                                    </Group>
+                                )}
                             </Stack>
                         ))}
                 </>
