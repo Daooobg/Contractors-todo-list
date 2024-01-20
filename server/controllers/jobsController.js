@@ -45,3 +45,23 @@ exports.addNewContact = catchAsync(async (req, res, next) => {
         return next(new AppError(error));
     }
 });
+
+exports.deleteContact = catchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    const { contactId } = req.body;
+
+    if (!id) {
+        return next(new AppError('Please send address id', 400));
+    }
+
+    if (!contactId) {
+        return next(new AppError('Please send contact id', 400));
+    }
+
+    try {
+        await jobService.deleteContact(id, contactId);
+        res.status(204).end();
+    } catch (error) {
+        return next(new AppError(error));
+    }
+});
