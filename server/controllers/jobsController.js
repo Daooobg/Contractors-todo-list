@@ -10,9 +10,9 @@ exports.addAddress = catchAsync(async (req, res, next) => {
         return next(new AppError('All fields are required', 400, req.body));
     }
 
-    await jobService.addAddress(req.body);
+    const newAddress = await jobService.addAddress(req.body);
 
-    res.status(204).end();
+    res.status(200).json(newAddress);
 });
 
 exports.getAddressByPostcode = catchAsync(async (req, res, next) => {
@@ -41,7 +41,6 @@ exports.addNewContact = catchAsync(async (req, res, next) => {
     try {
         const contactId = await jobService.addNewContact(id, newContact);
         res.status(200).json(contactId);
-        
     } catch (error) {
         return next(new AppError(error));
     }
