@@ -165,7 +165,7 @@ const jobsApi = createApi({
                                 if (address._id == data.addressId) {
                                     address.contactDetails = address.contactDetails.map(
                                         (contact) => {
-                                            if ((contact._id = data.contact._id)) {
+                                            if ((contact._id === data.contact._id)) {
                                                 contact.name = data.contact.name;
                                                 contact.phoneNumber = data.contact.phoneNumber;
                                             }
