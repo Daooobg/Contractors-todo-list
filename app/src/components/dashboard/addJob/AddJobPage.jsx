@@ -1,7 +1,11 @@
 import { Button, Card, Center, Divider, Group, Stack, Text } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
+import { VscError } from 'react-icons/vsc';
 import { useState } from 'react';
+
 import AddAddress from './AddAddress';
 import AddJobProgress from './AddJobProgress';
+import IssuesForm from './IssuesForm';
 
 const AddJobPage = () => {
     const [currentStep, setCurrentStep] = useState(1);
@@ -27,6 +31,7 @@ const AddJobPage = () => {
                         {currentStep === 1 && (
                             <AddAddress firstStep={firstStep} setFirstStep={setFirstStep} />
                         )}
+                        {currentStep === 2 && <IssuesForm />}
                     </Stack>
                     <Divider mt='xl' />
                     <Group mt='xl' justify='space-between'>
@@ -36,7 +41,20 @@ const AddJobPage = () => {
                         <Button
                             onClick={() => {
                                 if (currentStep === 1) {
-                                    setCurrentStep(2);
+                                    if (firstStep.selectedAddress) {
+                                        setCurrentStep(2);
+                                    } else {
+                                        notifications.show({
+                                            color: 'red',
+                                            title: 'Create new job',
+                                            message: 'Please select address',
+                                            icon: (
+                                                <VscError
+                                                    style={{ width: '30px', height: '30px' }}
+                                                />
+                                            ),
+                                        });
+                                    }
                                 }
                             }}
                         >
