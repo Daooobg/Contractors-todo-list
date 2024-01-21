@@ -5,30 +5,42 @@ import { useEffect, useMemo, useState } from 'react';
 import { useAddAddressMutation, useGetAddressQuery } from '../../../store/features/api/jobsApi';
 import AddressForm from './AddressForm';
 
-const AddAddress = () => {
-    const [searchValue, setSearchValue] = useState('');
-    const [labelAddresses, setLabelAddresses] = useState([]);
-    const [skip, setSkip] = useState(true);
-    const [opened, { open, close }] = useDisclosure(false);
-    const [contactDetails, setContactDetails] = useState([]);
-    const [addAddress] = useAddAddressMutation();
-    const { data: allAddresses } = useGetAddressQuery(searchValue, { skip });
-    const [addresses, setAddresses] = useState([]);
-
+const AddAddress = ({ firstStep, setFirstStep }) => {
     const postcodeRegex = useMemo(() => /^[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][ABD-HJLNP-UW-Z]{2}$/, []);
 
+    const { data: allAddresses } = useGetAddressQuery(firstStep.currentData.postcode, {
+        skip: firstStep.skip,
+    });
+    const [labelAddresses, setLabelAddresses] = useState(
+        allAddresses
+            ? allAddresses.map((a) => {
+                  return { label: a.fullAddress, value: a._id };
+              })
+            : []
+    );
+    const [opened, { open, close }] = useDisclosure(false);
+    const [contactDetails, setContactDetails] = useState(firstStep.contactDetails || []);
+    const [addAddress] = useAddAddressMutation();
+
     useEffect(() => {
-        if (postcodeRegex.test(searchValue) && allAddresses) {
+        if (allAddresses) {
+            setFirstStep((prevStep) => ({ ...prevStep, allAddresses: allAddresses }));
+        } else {
+            setFirstStep((prevStep) => ({ ...prevStep, allAddresses: undefined }));
+        }
+    }, [allAddresses, setFirstStep]);
+
+    useEffect(() => {
+        if (postcodeRegex.test(firstStep.currentData.postcode) && allAddresses) {
             const allFullLabelAddresses = allAddresses.map((a) => {
                 return { label: a.fullAddress, value: a._id };
             });
-            setAddresses(allAddresses);
+
             setLabelAddresses(allFullLabelAddresses);
         } else {
             setLabelAddresses([]);
-            setAddresses([]);
         }
-    }, [allAddresses, postcodeRegex, searchValue]);
+    }, [allAddresses, postcodeRegex, firstStep.currentData.postcode]);
 
     const form = useForm({
         initialValues: {
@@ -82,12 +94,17 @@ const AddAddress = () => {
     };
 
     const searchHandler = (e) => {
-        setSearchValue(e.currentTarget.value.toUpperCase());
+        console.log(e);
+        setFirstStep((prevStep) => ({
+            ...prevStep,
+            currentData: { ...prevStep.currentData, postcode: e.target.value.toUpperCase() },
+        }));
+
         const isValidPostcode = postcodeRegex.test(e.currentTarget.value.toUpperCase());
         if (isValidPostcode) {
-            setSkip(false);
+            setFirstStep((prevStep) => ({ ...prevStep, skip: false }));
         } else {
-            setSkip(true);
+            setFirstStep((prevStep) => ({ ...prevStep, skip: true, allAddresses: undefined }));
         }
     };
     return (
@@ -122,21 +139,21 @@ const AddAddress = () => {
             <TextInput
                 label='Postcode:'
                 placeholder='RM8 2FW'
-                value={searchValue}
+                value={firstStep.currentData.postcode}
                 onChange={searchHandler}
             />
             <AddressForm
                 open={open}
                 addresses={labelAddresses}
-                allAddresses={addresses}
-                postcode={searchValue}
                 addNewAddressForm={form}
+                firstStep={firstStep}
+                setFirstStep={setFirstStep}
             />
 
             {allAddresses && allAddresses.length === 0 && (
                 <Button
                     onClick={() => {
-                        form.setValues({ postcode: searchValue });
+                        form.setValues({ postcode: firstStep.currentData.postcode });
                         open();
                     }}
                 >

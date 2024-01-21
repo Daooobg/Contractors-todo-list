@@ -9,32 +9,38 @@ import {
     useEditContactMutation,
 } from '../../../store/features/api/jobsApi';
 
-const AddressForm = ({ addresses, open, allAddresses, postcode, addNewAddressForm }) => {
-    const [selectedValue, setSelectedValue] = useState(undefined);
+const AddressForm = ({
+    addresses,
+    open,
+    addNewAddressForm,
+    firstStep,
+    setFirstStep,
+}) => {
+    const [selectedValue, setSelectedValue] = useState(firstStep.selectedAddress?._id || undefined);
     const [disabledContacts, setDisabledContacts] = useState([]);
-    const [selectedAddress, setSelectedAddress] = useState([]);
-    const [contactDetails, setContactDetails] = useState([]);
 
     const [addNewContact] = useAddNewContactMutation();
     const [deleteContact] = useDeleteContactMutation();
     const [editContact] = useEditContactMutation();
 
     useEffect(() => {
-        if (!allAddresses.some((address) => address._id === selectedValue)) {
-            setSelectedValue(undefined);
+        if (firstStep.allAddresses) {
+            if (!firstStep.allAddresses.some((address) => address._id === selectedValue)) {
+                setSelectedValue(undefined);
+            }
         }
 
-        if (allAddresses.length > 0 && selectedValue) {
-            const contactData = allAddresses.filter((address) => address._id === selectedValue);
+        if (firstStep.allAddresses && selectedValue) {
+            const contactData = firstStep.allAddresses.filter(
+                (address) => address._id === selectedValue
+            );
             if (contactData.length > 0) {
-                setSelectedAddress(contactData[0]);
-                setContactDetails(contactData[0].contactDetails || []);
+                setFirstStep((prevStep) => ({ ...prevStep, selectedAddress: contactData[0] }));
+            } else {
+                setFirstStep((prevStep) => ({ ...prevStep, selectedAddress: null }));
             }
-        } else {
-            setSelectedAddress([]);
-            setContactDetails([]);
         }
-    }, [allAddresses, selectedValue]);
+    }, [firstStep.allAddresses, selectedValue, setFirstStep]);
 
     const handleEditClick = (index) => {
         setDisabledContacts((prev) => {
@@ -50,22 +56,25 @@ const AddressForm = ({ addresses, open, allAddresses, postcode, addNewAddressFor
             phoneNumber: '',
         };
 
-        setSelectedAddress((prevAddress) => ({
-            ...prevAddress,
-            contactDetails: [...(prevAddress.contactDetails || []), emptyContact],
+        setFirstStep((prevStep) => ({
+            ...prevStep,
+            selectedAddress: {
+                ...prevStep.selectedAddress,
+                contactDetails: [...(prevStep.selectedAddress.contactDetails || []), emptyContact],
+            },
         }));
-        setContactDetails((prevContacts) => [...prevContacts, emptyContact]);
     };
 
     return (
         <>
-            {allAddresses.length > 0 && (
+            {firstStep.allAddresses && (
                 <>
                     <Select
                         label='Address:'
                         clearable
                         checkIconPosition='right'
                         onChange={(value) => setSelectedValue(value)}
+                        defaultValue={firstStep.selectedAddress?._id || null}
                         data={addresses}
                         maxDropdownHeight={100}
                         nothingFoundMessage={
@@ -73,7 +82,9 @@ const AddressForm = ({ addresses, open, allAddresses, postcode, addNewAddressFor
                                 <Text size='lg'>Address not found!</Text>
                                 <Button
                                     onClick={() => {
-                                        addNewAddressForm.setValues({ postcode });
+                                        addNewAddressForm.setValues({
+                                            postcode: firstStep.currentData.postcode,
+                                        });
                                         open();
                                     }}
                                 >
@@ -87,42 +98,58 @@ const AddressForm = ({ addresses, open, allAddresses, postcode, addNewAddressFor
                         <Text>Contact Details:</Text>
                         <Button onClick={addContactHandler}>Add new contact</Button>
                     </Group>
-                    {selectedAddress &&
-                        contactDetails &&
-                        contactDetails.map((_, inx) => (
-                            <Stack mt={20} key={selectedAddress._id + inx}>
+                    {firstStep.selectedAddress &&
+                        selectedValue &&
+                        firstStep.selectedAddress.contactDetails.length > 0 &&
+                        firstStep.selectedAddress.contactDetails.map((contact, inx) => (
+                            <Stack mt={20} key={firstStep.selectedAddress._id + inx}>
                                 <Group wrap='nowrap'>
                                     <TextInput
                                         disabled={!disabledContacts[inx]}
-                                        value={contactDetails[inx].name}
+                                        value={contact.name}
                                         onChange={(value) => {
-                                            setContactDetails((prevContacts) =>
-                                                prevContacts.map((prevContact, index) =>
-                                                    index === inx
-                                                        ? {
-                                                              ...prevContact,
-                                                              name: value.target.value,
-                                                          }
-                                                        : prevContact
-                                                )
-                                            );
+                                            setFirstStep((prevStep) => ({
+                                                ...prevStep,
+                                                selectedAddress: {
+                                                    ...prevStep.selectedAddress,
+                                                    contactDetails: [
+                                                        ...prevStep.selectedAddress.contactDetails.map(
+                                                            (prevContact, index) =>
+                                                                index === inx
+                                                                    ? {
+                                                                          ...prevContact,
+                                                                          name: value.target.value,
+                                                                      }
+                                                                    : prevContact
+                                                        ),
+                                                    ],
+                                                },
+                                            }));
                                         }}
                                     />
                                     :
                                     <TextInput
                                         disabled={!disabledContacts[inx]}
-                                        value={contactDetails[inx].phoneNumber}
+                                        value={contact.phoneNumber}
                                         onChange={(value) => {
-                                            setContactDetails((prevContacts) =>
-                                                prevContacts.map((prevContact, index) =>
-                                                    index === inx
-                                                        ? {
-                                                              ...prevContact,
-                                                              phoneNumber: value.target.value,
-                                                          }
-                                                        : prevContact
-                                                )
-                                            );
+                                            setFirstStep((prevStep) => ({
+                                                ...prevStep,
+                                                selectedAddress: {
+                                                    ...prevStep.selectedAddress,
+                                                    contactDetails: [
+                                                        ...prevStep.selectedAddress.contactDetails.map(
+                                                            (prevContact, index) =>
+                                                                index === inx
+                                                                    ? {
+                                                                          ...prevContact,
+                                                                          phoneNumber:
+                                                                              value.target.value,
+                                                                      }
+                                                                    : prevContact
+                                                        ),
+                                                    ],
+                                                },
+                                            }));
                                         }}
                                     />
                                     <Button onClick={() => handleEditClick(inx)}>
@@ -139,16 +166,19 @@ const AddressForm = ({ addresses, open, allAddresses, postcode, addNewAddressFor
                                 </Group>
                                 {disabledContacts[inx] && (
                                     <Group>
-                                        {contactDetails[inx]._id ? (
+                                        {contact._id ? (
                                             <>
-                                                {' '}
                                                 <Button
                                                     onClick={() => {
                                                         handleEditClick(inx);
                                                         editContact({
-                                                            addressId: selectedValue,
-                                                            contact: contactDetails[inx],
-                                                            postcode,
+                                                            addressId:
+                                                                firstStep.selectedAddress._id,
+                                                            contact:
+                                                                firstStep.selectedAddress
+                                                                    .contactDetails[inx],
+                                                            postcode:
+                                                                firstStep.selectedAddress.postcode,
                                                         });
                                                     }}
                                                 >
@@ -159,11 +189,15 @@ const AddressForm = ({ addresses, open, allAddresses, postcode, addNewAddressFor
                                                     onClick={() => {
                                                         handleEditClick(inx);
                                                         deleteContact({
-                                                            addressId: selectedValue,
+                                                            addressId:
+                                                                firstStep.selectedAddress._id,
                                                             contactId: {
-                                                                contactId: contactDetails[inx]._id,
+                                                                contactId:
+                                                                    firstStep.selectedAddress
+                                                                        .contactDetails[inx]._id,
                                                             },
-                                                            postcode,
+                                                            postcode:
+                                                                firstStep.selectedAddress.postcode,
                                                         });
                                                     }}
                                                 >
@@ -175,9 +209,12 @@ const AddressForm = ({ addresses, open, allAddresses, postcode, addNewAddressFor
                                                 onClick={() => {
                                                     handleEditClick(inx);
                                                     addNewContact({
-                                                        addressId: selectedValue,
-                                                        contact: contactDetails[inx],
-                                                        postcode,
+                                                        addressId: firstStep.selectedAddress._id,
+                                                        contact:
+                                                            firstStep.selectedAddress
+                                                                .contactDetails[inx],
+                                                        postcode:
+                                                            firstStep.selectedAddress.postcode,
                                                     });
                                                 }}
                                             >
