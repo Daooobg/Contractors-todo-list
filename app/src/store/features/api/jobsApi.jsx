@@ -165,7 +165,7 @@ const jobsApi = createApi({
                                 if (address._id == data.addressId) {
                                     address.contactDetails = address.contactDetails.map(
                                         (contact) => {
-                                            if ((contact._id === data.contact._id)) {
+                                            if (contact._id === data.contact._id) {
                                                 contact.name = data.contact.name;
                                                 contact.phoneNumber = data.contact.phoneNumber;
                                             }
@@ -201,6 +201,13 @@ const jobsApi = createApi({
                     }
                 },
             }),
+            createNewJob: builder.mutation({
+                query: (args) => ({
+                    url: '/jobs/createJob/',
+                    method: 'POST',
+                    body: args,
+                }),
+            }),
         };
     },
 });
@@ -211,5 +218,6 @@ export const {
     useAddNewContactMutation,
     useDeleteContactMutation,
     useEditContactMutation,
+    useCreateNewJobMutation,
 } = jobsApi;
 export { jobsApi };
