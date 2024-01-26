@@ -1,4 +1,5 @@
 const Address = require('../models/addressModel');
+const Issues = require('../models/issuesModel');
 const AppError = require('../utils/AppError');
 
 const findAddressById = (id) => Address.findById({ _id: id });
@@ -77,6 +78,18 @@ exports.editContact = async (addressId, contactDetails) => {
         return {
             message: 'Updated successfully',
         };
+    } catch (error) {
+        throw new AppError(error);
+    }
+};
+
+exports.createNewJob = async (data, owner) => {
+    data.ownerId = owner._id;
+
+    try {
+        const newJob = await Issues.create(data);
+
+        return newJob;
     } catch (error) {
         throw new AppError(error);
     }

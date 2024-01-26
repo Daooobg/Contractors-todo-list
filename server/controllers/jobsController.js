@@ -85,3 +85,13 @@ exports.editContact = catchAsync(async (req, res, next) => {
         return next(new AppError(error));
     }
 });
+
+exports.createNewJob = catchAsync(async (req, res, next) => {
+    try {
+        const newJob = await jobService.createNewJob(req.body, req.user);
+
+        res.status(200).json(newJob);
+    } catch (error) {
+        return next(new AppError(error));
+    }
+});
