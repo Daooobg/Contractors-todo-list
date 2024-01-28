@@ -1,5 +1,9 @@
 const { Storage } = require('@google-cloud/storage');
 
+const AppError = require('../utils/AppError');
+const Issue = require('../models/issuesModel');
+const Image = require('../models/imageModel');
+
 const storage = new Storage({
     projectId: process.env.GOOGLE_PROJECT_ID,
     keyFilename: process.env.GOOGLE_KEY_FILENAME,
@@ -30,4 +34,16 @@ const uploadImageToGoogle = async (imageFile, imageFolder) => {
     });
 };
 
+exports.addAllImages = async (issueId, image) => {
+    try {
+        const data = await uploadImageToGoogle(image, issueId);
+        const imageUrl = { imageUrl: data.imageUrl };
+        const newImage = await Image.create(imageUrl);
 
+        await Issue.findByIdAndUpdate(issueId, { $push: { allImages: newImage._id } }, { new: true });
+
+        return imageUrl;
+    } catch (error) {
+        throw new AppError(`We couldn't upload ${image.originalname}. Please try again later`);
+    }
+};
