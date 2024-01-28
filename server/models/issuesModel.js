@@ -10,14 +10,12 @@ const issuesSchema = new Schema({
             },
             issueImageUrl: [
                 {
-                    url: {
-                        type: String,
-                    },
+                    type: mongoose.Types.ObjectId,
+                    ref: 'Image',
                 },
             ],
             price: {
                 type: Number,
-                // required: [true, 'Please provide price'],
                 min: [0, 'Price must be a positive number'],
             },
         },
@@ -25,15 +23,13 @@ const issuesSchema = new Schema({
     // Total price for all issues
     totalPrice: {
         type: Number,
-        // required: [true, 'Please provide total price'],
         min: [0, 'Total price must be a positive number'],
     },
     // Array of images associated with the issue
     allImages: [
         {
-            imageUrl: {
-                type: String,
-            },
+            type: mongoose.Types.ObjectId,
+            ref: 'Image',
         },
     ],
     // Creation timestamp
