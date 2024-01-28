@@ -5,7 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 exports.addAllImages = catchAsync(async (req, res, next) => {
     const issueId = req.params;
     const image = req.file;
-    if (!image || issueId) {
+    if (!image || !issueId) {
         return next(new AppError('There is a problem please try again', 400));
     }
 
