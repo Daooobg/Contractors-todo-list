@@ -42,7 +42,7 @@ exports.addAllImages = async (issueId, image) => {
 
         await Issue.findByIdAndUpdate(issueId, { $push: { allImages: newImage._id } }, { new: true });
 
-        return imageUrl;
+        return { imageUrl: newImage.imageUrl, _id: newImage._id };
     } catch (error) {
         throw new AppError(`We couldn't upload ${image.originalname}. Please try again later`);
     }
