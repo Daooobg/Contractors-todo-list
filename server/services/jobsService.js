@@ -96,8 +96,8 @@ exports.createNewJob = async (data, owner) => {
     }
 };
 
-exports.getAllJobsByOwnerId = (user) =>
-    Issues.find({ ownerId: user._id }, '-issues.issueImageUrl')
+exports.getAllJobsByOwnerId = (user, filter) =>
+    Issues.find({ ownerId: user._id, ...filter }, '-issues.issueImageUrl')
         .populate([
             { path: 'addressId', select: 'postcode fullAddress  -_id' },
             { path: 'contractorId', select: 'fullName -_id' },
