@@ -34,13 +34,21 @@ const uploadImageToGoogle = async (imageFile, imageFolder) => {
     });
 };
 
-exports.addAllImages = async (issueId, image) => {
+exports.addAllImages = async (jobId, image, issueId) => {
     try {
-        const data = await uploadImageToGoogle(image, issueId);
+        const data = await uploadImageToGoogle(image, jobId);
         const imageUrl = { imageUrl: data.imageUrl };
         const newImage = await Image.create(imageUrl);
 
-        await Issue.findByIdAndUpdate(issueId, { $push: { allImages: newImage._id } }, { new: true });
+        if (issueId) {
+            await Issue.findOneAndUpdate(
+                { _id: jobId, 'issues._id': issueId },
+                { $push: { 'issues.$.issueImageUrl': newImage._id } },
+                { new: true }
+            );
+        } else {
+            await Issue.findByIdAndUpdate(jobId, { $push: { allImages: newImage._id } }, { new: true });
+        }
 
         return { imageUrl: newImage.imageUrl, _id: newImage._id };
     } catch (error) {
