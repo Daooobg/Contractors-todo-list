@@ -1,4 +1,5 @@
 const Address = require('../models/addressModel');
+const Image = require('../models/imageModel');
 const Issues = require('../models/issuesModel');
 const AppError = require('../utils/AppError');
 
@@ -94,3 +95,11 @@ exports.createNewJob = async (data, owner) => {
         throw new AppError(error);
     }
 };
+
+exports.getAllJobsByOwnerId = (user) =>
+    Issues.find({ ownerId: user._id }, '-issues.issueImageUrl')
+        .populate([
+            { path: 'addressId', select: 'postcode fullAddress  -_id' },
+            { path: 'contractorId', select: 'fullName -_id' },
+        ])
+        .select('issues createdAt -ownerId -allImages -__v');
