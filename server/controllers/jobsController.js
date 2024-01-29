@@ -95,3 +95,17 @@ exports.createNewJob = catchAsync(async (req, res, next) => {
         return next(new AppError(error));
     }
 });
+
+exports.getAllJobsByOwnerId = catchAsync(async (req, res, next) => {
+    try {
+        const user = req.user;
+        if (!user || user.role !== 'Agent') {
+            return next(new AppError("Forbidden: You don't have permission.", 403));
+        }
+
+        const jobs = await jobService.getAllJobsByOwnerId(user);
+        res.status(200).json(jobs);
+    } catch (error) {
+        return next(new AppError(error));
+    }
+});
