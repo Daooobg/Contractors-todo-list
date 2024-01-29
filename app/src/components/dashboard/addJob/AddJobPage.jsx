@@ -1,11 +1,11 @@
-import { Button, Card, Center, Divider, Group, Stack, Text } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
-import { VscError } from 'react-icons/vsc';
+import { Center, Paper, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 
 import AddAddress from './AddAddress';
 import AddJobProgress from './AddJobProgress';
-import IssuesForm from './IssuesForm';
+import AddIssues from './AddIssues';
+import { useCreateNewJobMutation } from '../../../store/features/api/jobsApi';
+import AddImages from './AddImages';
 
 const AddJobPage = () => {
     const [currentStep, setCurrentStep] = useState(1);
@@ -19,49 +19,47 @@ const AddJobPage = () => {
         allAddresses: null,
     });
 
+    const [secondStep, setSecondStep] = useState({
+        issues: [{ issue: '' }],
+        notes: '',
+        contractorId: null,
+        addressId: null,
+    });
+
+    const [createNewJob, { data: createdJob }] = useCreateNewJobMutation();
+
+    const onSubmitJob = () => {
+        createNewJob(secondStep);
+    };
+
     return (
         <Center mt={80}>
             <Stack>
                 <AddJobProgress step={currentStep} />
-                <Card w={400} shadow='sm' padding='lg' radius='md' withBorder>
+                <Paper p='lg' w={400} shadow='sm' padding='lg' radius='md' withBorder>
                     <Stack>
                         <Text tt={'capitalize'} fz='xl' fw={900} mx='auto'>
                             Create new job
                         </Text>
                         {currentStep === 1 && (
-                            <AddAddress firstStep={firstStep} setFirstStep={setFirstStep} />
+                            <AddAddress
+                                firstStep={firstStep}
+                                setFirstStep={setFirstStep}
+                                setCurrentStep={setCurrentStep}
+                                setSecondStep={setSecondStep}
+                            />
                         )}
-                        {currentStep === 2 && <IssuesForm />}
+                        {currentStep === 2 && (
+                            <AddIssues
+                                secondStep={secondStep}
+                                setSecondStep={setSecondStep}
+                                setCurrentStep={setCurrentStep}
+                                onSubmit={onSubmitJob}
+                            />
+                        )}
+                        {currentStep === 3 && <AddImages createdJob={createdJob} />}
                     </Stack>
-                    <Divider mt='xl' />
-                    <Group mt='xl' justify='space-between'>
-                        <Button onClick={() => setCurrentStep((prevStep) => prevStep - 1)}>
-                            Back
-                        </Button>
-                        <Button
-                            onClick={() => {
-                                if (currentStep === 1) {
-                                    if (firstStep.selectedAddress) {
-                                        setCurrentStep(2);
-                                    } else {
-                                        notifications.show({
-                                            color: 'red',
-                                            title: 'Create new job',
-                                            message: 'Please select address',
-                                            icon: (
-                                                <VscError
-                                                    style={{ width: '30px', height: '30px' }}
-                                                />
-                                            ),
-                                        });
-                                    }
-                                }
-                            }}
-                        >
-                            Next
-                        </Button>
-                    </Group>
-                </Card>
+                </Paper>
             </Stack>
         </Center>
     );

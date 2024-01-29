@@ -1,11 +1,14 @@
-import { Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
+import { Button, Divider, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { notifications } from '@mantine/notifications';
+import { VscError } from 'react-icons/vsc';
 import { useDisclosure } from '@mantine/hooks';
 import { useEffect, useMemo, useState } from 'react';
+
 import { useAddAddressMutation, useGetAddressQuery } from '../../../store/features/api/jobsApi';
 import AddressForm from './AddressForm';
 
-const AddAddress = ({ firstStep, setFirstStep }) => {
+const AddAddress = ({ firstStep, setFirstStep, setCurrentStep, setSecondStep }) => {
     const postcodeRegex = useMemo(() => /^[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][ABD-HJLNP-UW-Z]{2}$/, []);
 
     const { data: allAddresses } = useGetAddressQuery(firstStep.currentData.postcode, {
@@ -94,7 +97,6 @@ const AddAddress = ({ firstStep, setFirstStep }) => {
     };
 
     const searchHandler = (e) => {
-        console.log(e);
         setFirstStep((prevStep) => ({
             ...prevStep,
             currentData: { ...prevStep.currentData, postcode: e.target.value.toUpperCase() },
@@ -107,6 +109,24 @@ const AddAddress = ({ firstStep, setFirstStep }) => {
             setFirstStep((prevStep) => ({ ...prevStep, skip: true, allAddresses: undefined }));
         }
     };
+
+    const onSubmit = () => {
+        if (firstStep.selectedAddress?._id) {
+            setSecondStep((prevStep) => ({
+                ...prevStep,
+                addressId: firstStep.selectedAddress._id,
+            }));
+            setCurrentStep(2);
+        } else {
+            notifications.show({
+                color: 'red',
+                title: 'Create new job',
+                message: 'Please select address',
+                icon: <VscError style={{ width: '30px', height: '30px' }} />,
+            });
+        }
+    };
+
     return (
         <>
             <Modal opened={opened} onClose={close} title='Add new address'>
@@ -160,6 +180,10 @@ const AddAddress = ({ firstStep, setFirstStep }) => {
                     Add new address
                 </Button>
             )}
+            <Divider mt='xl' />
+            <Group mt='xl' justify='flex-end'>
+                <Button onClick={onSubmit}>Next</Button>
+            </Group>
         </>
     );
 };
