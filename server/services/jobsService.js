@@ -103,3 +103,14 @@ exports.getAllJobsByOwnerId = (user, filter) =>
             { path: 'contractorId', select: 'fullName -_id' },
         ])
         .select('issues createdAt -ownerId -allImages -__v');
+
+exports.getJobById = (jobId) =>
+    Issues.findById({ _id: jobId })
+        .populate([
+            { path: 'allImages', select: '-__v' },
+            { path: 'contractorId', select: 'fullName' },
+            { path: 'addressId', select: '-__v' },
+            { path: 'ownerId', select: 'fullName' },
+            { path: 'issues.issueImageUrl', select: '-__v'},
+        ])
+        .select('-__v');

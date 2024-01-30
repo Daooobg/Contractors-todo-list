@@ -110,3 +110,19 @@ exports.getAllJobsByOwnerId = catchAsync(async (req, res, next) => {
         return next(new AppError(error));
     }
 });
+
+exports.getJobById = catchAsync(async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const user = req.user;
+
+        if (!user) {
+            return next(new AppError("Forbidden: You don't have permission.", 403));
+        }
+
+        const job = await jobService.getJobById(id);
+        res.status(200).json(job);
+    } catch (error) {
+        return next(new AppError(error));
+    }
+});
