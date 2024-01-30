@@ -9,6 +9,7 @@ import UsersVerificationsPage from './components/dashboard/usersVerifications/Us
 import ChangeUsersPage from './components/dashboard/changeUsers/ChangeUsersPage';
 import AddJobPage from './components/dashboard/addJob/AddJobPage';
 import Jobs from './components/dashboard/jobs/Jobs';
+import DetailsPage from './components/dashboard/details/DetailsPage';
 
 const router = createBrowserRouter([
     {
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
                     {
                         path: 'jobs',
                         element: <Jobs />,
+                    },
+                    {
+                        path: 'jobs/:id',
+                        element: <DetailsPage />,
                     },
                 ],
             },
