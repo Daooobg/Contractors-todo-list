@@ -8,6 +8,7 @@ import AppShellLayout from './components/layouts/AppShellLayout';
 import UsersVerificationsPage from './components/dashboard/usersVerifications/UsersVerificationsPage';
 import ChangeUsersPage from './components/dashboard/changeUsers/ChangeUsersPage';
 import AddJobPage from './components/dashboard/addJob/AddJobPage';
+import Jobs from './components/dashboard/jobs/Jobs';
 
 const router = createBrowserRouter([
     {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
                     {
                         path: 'addNewJob',
                         element: <AddJobPage />,
+                    },
+                    {
+                        path: 'jobs',
+                        element: <Jobs />,
                     },
                 ],
             },
