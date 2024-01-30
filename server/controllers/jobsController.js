@@ -111,6 +111,21 @@ exports.getAllJobsByOwnerId = catchAsync(async (req, res, next) => {
     }
 });
 
+exports.getAllJobsByContractorId = catchAsync(async (req, res, next) => {
+    try {
+        const filter = req.query;
+        const user = req.user;
+        if (!user || user.role !== 'Contractor') {
+            return next(new AppError("Forbidden: You don't have permission.", 403));
+        }
+
+        const jobs = await jobService.getAllJobsByContractorId(user, filter);
+        res.status(200).json(jobs);
+    } catch (error) {
+        return next(new AppError(error));
+    }
+});
+
 exports.getJobById = catchAsync(async (req, res, next) => {
     try {
         const { id } = req.params;
