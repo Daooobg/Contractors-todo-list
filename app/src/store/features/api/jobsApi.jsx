@@ -208,6 +208,9 @@ const jobsApi = createApi({
                     body: args,
                 }),
             }),
+            getOwnerJobs: builder.query({
+                query: (args) => ({ url: `/jobs/getByOwner${args}` }),
+            }),
         };
     },
 });
@@ -219,5 +222,6 @@ export const {
     useDeleteContactMutation,
     useEditContactMutation,
     useCreateNewJobMutation,
+    useGetOwnerJobsQuery,
 } = jobsApi;
 export { jobsApi };
