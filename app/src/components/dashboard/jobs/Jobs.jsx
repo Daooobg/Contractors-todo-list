@@ -1,7 +1,12 @@
 import { Button, Card, Divider, Flex, Group, Stack, Text } from '@mantine/core';
-import { useGetOwnerJobsQuery } from '../../../store/features/api/jobsApi';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+
+import {
+    useGetContractorJobsQuery,
+    useGetOwnerJobsQuery,
+} from '../../../store/features/api/jobsApi';
+import { useEffect, useState } from 'react';
 
 const Jobs = () => {
     const location = useLocation();
@@ -11,10 +16,25 @@ const Jobs = () => {
         skip: role === 'Agent' ? false : true,
     });
 
+    const { data: contractorJobs } = useGetContractorJobsQuery(
+        location.search.toLocaleLowerCase(),
+        { skip: role === 'Contractor' ? false : true }
+    );
+
+    const [jobs, setJobs] = useState([]);
+
+    useEffect(() => {
+        if (role === 'Contractor') {
+            setJobs(contractorJobs);
+        } else if (role === 'Agent') {
+            setJobs(ownerJobs);
+        }
+    }, [contractorJobs, ownerJobs, role]);
+
     return (
         <Flex direction='column' align='self-start' gap='xl' m='xl'>
-            {ownerJobs && ownerJobs.length > 0 ? (
-                ownerJobs.map((job) => {
+            {jobs && jobs.length > 0 ? (
+                jobs.map((job) => {
                     const dateObj = new Date(job.createdAt);
                     return (
                         <Card key={job._id} w='100%' shadow='md' withBorder>
