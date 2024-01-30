@@ -1,11 +1,15 @@
 import { Button, Card, Divider, Flex, Group, Stack, Text } from '@mantine/core';
 import { useGetOwnerJobsQuery } from '../../../store/features/api/jobsApi';
 import { NavLink, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const Jobs = () => {
     const location = useLocation();
+    const role = useSelector((state) => state.auth.user.role);
 
-    const { data: ownerJobs } = useGetOwnerJobsQuery(location.search.toLowerCase());
+    const { data: ownerJobs } = useGetOwnerJobsQuery(location.search.toLowerCase(), {
+        skip: role === 'Agent' ? false : true,
+    });
 
     return (
         <Flex direction='column' align='self-start' gap='xl' m='xl'>
