@@ -10,11 +10,12 @@ import {
 } from '@mantine/core';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { removeUser } from '../../store/features/slices/authSlice';
 
 const Header = ({ userData, opened, toggle }) => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { setColorScheme } = useMantineColorScheme();
     const computedColorScheme = useComputedColorScheme('light');
 
@@ -24,6 +25,7 @@ const Header = ({ userData, opened, toggle }) => {
 
     const logoutHandler = () => {
         dispatch(removeUser());
+        navigate('/')
     };
 
     return (
