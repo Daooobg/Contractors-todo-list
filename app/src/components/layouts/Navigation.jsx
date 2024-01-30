@@ -6,6 +6,7 @@ const Navigation = ({ role }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const locationPath = location.pathname.split('/');
+    const [isOpen, setIsOpen] = useState(false);
 
     const [activeLink, setActiveLInk] = useState(
         locationPath[locationPath.length - 1].toLowerCase()
@@ -46,6 +47,60 @@ const Navigation = ({ role }) => {
                     />
                 </>
             )}
+            <NavLink
+                childrenOffset={0}
+                label='Jobs'
+                variant='filled'
+                active={
+                    activeLink === 'allownjobs' ||
+                    activeLink === 'allapprovedownjobs' ||
+                    activeLink === 'allnotapprovedownjobs' ||
+                    activeLink === 'allfinishownjobs'
+                }
+                opened={isOpen}
+                onClick={() => setIsOpen((prev) => !prev)}
+            >
+                <NavLink
+                    variant='filled'
+                    active={activeLink === 'allownjobs'}
+                    label='All Jobs'
+                    onClick={() => {
+                        setActiveLInk('allownjobs');
+                        navigate('/dashboard/jobs');
+                        setIsOpen(false);
+                    }}
+                />
+                <NavLink
+                    variant='filled'
+                    active={activeLink === 'allapprovedownjobs'}
+                    label='All Approved Jobs'
+                    onClick={() => {
+                        setActiveLInk('allapprovedownjobs');
+                        navigate('/dashboard/jobs?status=approved');
+                        setIsOpen(false);
+                    }}
+                />
+                <NavLink
+                    variant='filled'
+                    active={activeLink === 'allnotapprovedownjobs'}
+                    label='Waiting for Approval Jobs'
+                    onClick={() => {
+                        setActiveLInk('allnotapprovedownjobs');
+                        navigate('/dashboard/jobs?status=created');
+                        setIsOpen(false);
+                    }}
+                />
+                <NavLink
+                    variant='filled'
+                    active={activeLink === 'allfinishownjobs'}
+                    label='All Finished Jobs'
+                    onClick={() => {
+                        setActiveLInk('allfinishownjobs');
+                        navigate('/dashboard/jobs?status=finish');
+                        setIsOpen(false);
+                    }}
+                />
+            </NavLink>
         </>
     );
 };
