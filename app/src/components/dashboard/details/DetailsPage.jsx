@@ -15,7 +15,7 @@ const DetailsPage = () => {
     return (
         <>
             <Modal opened={imageOpened} onClose={closeImage}>
-                <Image src={imageUrl} />
+                <Image mah='70vh' maw='70vw'  fit='scale-down' src={imageUrl} />
             </Modal>
             {currentJob ? (
                 <Paper withBorder p='lg'>
