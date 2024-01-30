@@ -104,6 +104,14 @@ exports.getAllJobsByOwnerId = (user, filter) =>
         ])
         .select('issues createdAt -ownerId -allImages -__v');
 
+exports.getAllJobsByContractorId = (user, filter) =>
+    Issues.find({ contractorId: user._id, ...filter }, '-issues.issueImageUrl')
+        .populate([
+            { path: 'addressId', select: 'postcode fullAddress  -_id' },
+            { path: 'ownerId', select: 'fullName -_id' },
+        ])
+        .select('issues createdAt -ownerId -allImages -__v');
+
 exports.getJobById = (jobId) =>
     Issues.findById({ _id: jobId })
         .populate([
@@ -111,6 +119,6 @@ exports.getJobById = (jobId) =>
             { path: 'contractorId', select: 'fullName' },
             { path: 'addressId', select: '-__v' },
             { path: 'ownerId', select: 'fullName' },
-            { path: 'issues.issueImageUrl', select: '-__v'},
+            { path: 'issues.issueImageUrl', select: '-__v' },
         ])
         .select('-__v');
