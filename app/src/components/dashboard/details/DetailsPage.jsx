@@ -1,13 +1,22 @@
 import { useParams } from 'react-router-dom';
+import { Box, Group, Image, Modal, NumberFormatter, Paper, Stack, Text } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { useState } from 'react';
+
 import { useGetJobByIdQuery } from '../../../store/features/api/jobsApi';
-import { Box, Group, Image, NumberFormatter, Paper, Stack, Text } from '@mantine/core';
 
 const DetailsPage = () => {
     const { id } = useParams();
     const { data: currentJob } = useGetJobByIdQuery(id);
     const dateObj = new Date(currentJob?.createdAt);
+    const [imageOpened, { open: openImage, close: closeImage }] = useDisclosure(false);
+
+    const [imageUrl, setImageUrl] = useState('');
     return (
         <>
+            <Modal opened={imageOpened} onClose={closeImage}>
+                <Image src={imageUrl} />
+            </Modal>
             {currentJob ? (
                 <Paper withBorder p='lg'>
                     <Stack>
@@ -40,7 +49,16 @@ const DetailsPage = () => {
                                 </Group>
                                 <Group>
                                     {issue.issueImageUrl.map((img) => (
-                                        <Image h={150} key={img._id} src={img.imageUrl} />
+                                        <Image
+                                            h={150}
+                                            key={img._id}
+                                            src={img.imageUrl}
+                                            style={{ cursor: 'pointer' }}
+                                            onClick={() => {
+                                                setImageUrl(img.imageUrl);
+                                                openImage();
+                                            }}
+                                        />
                                     ))}
                                 </Group>
                             </Box>
@@ -56,7 +74,16 @@ const DetailsPage = () => {
 
                         <Group>
                             {currentJob.allImages.map((img) => (
-                                <Image h={150} key={img._id} src={img.imageUrl} />
+                                <Image
+                                    style={{ cursor: 'pointer' }}
+                                    h={150}
+                                    key={img._id}
+                                    src={img.imageUrl}
+                                    onClick={() => {
+                                        setImageUrl(img.imageUrl);
+                                        openImage();
+                                    }}
+                                />
                             ))}
                         </Group>
                     </Stack>
