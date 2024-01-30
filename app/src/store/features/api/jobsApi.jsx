@@ -211,6 +211,9 @@ const jobsApi = createApi({
             getOwnerJobs: builder.query({
                 query: (args) => ({ url: `/jobs/getByOwner${args}` }),
             }),
+            getJobById: builder.query({
+                query: (args) => ({ url: `/jobs/jobs/${args}` }),
+            }),
         };
     },
 });
@@ -223,5 +226,6 @@ export const {
     useEditContactMutation,
     useCreateNewJobMutation,
     useGetOwnerJobsQuery,
+    useGetJobByIdQuery,
 } = jobsApi;
 export { jobsApi };
