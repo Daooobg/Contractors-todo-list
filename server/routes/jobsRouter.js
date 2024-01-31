@@ -10,5 +10,6 @@ router.route('/createJob').post(jobsController.createNewJob);
 router.route('/getByOwner').get(jobsController.getAllJobsByOwnerId);
 router.route('/getByContractor').get(jobsController.getAllJobsByContractorId);
 router.route('/jobs/:id').get(jobsController.getJobById);
+router.route('/contractor/offer/:id').post(jobsController.contractorOffer)
 
 module.exports = router;

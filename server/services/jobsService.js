@@ -122,3 +122,41 @@ exports.getJobById = (jobId) =>
             { path: 'issues.issueImageUrl', select: '-__v' },
         ])
         .select('-__v');
+
+exports.contractorOffer = async (jobId, contractorId, price) => {
+    try {
+        let job = await Issues.findById({ _id: jobId });
+
+        if (job.contractorId != contractorId) {
+            throw new AppError("You don't have permission to change the price");
+        }
+
+        // Validate price.issues
+        for (let issueId in price.issues) {
+            let issuePrice = price.issues[issueId];
+            if (typeof issuePrice !== 'number') {
+                throw new AppError('Invalid price format. Please provide a number for each issue.');
+            }
+        }
+
+        // Validate price.totalPrice
+        if (typeof price.totalPrice !== 'number') {
+            throw new AppError('Invalid price format. Please provide a number for each issue.');
+        }
+
+        // Update job prices
+        job.issues.forEach((issue) => {
+            if (price.issues.hasOwnProperty(issue._id)) {
+                issue.price = price.issues[issue._id];
+            }
+        });
+
+        job.totalPrice = price.totalPrice;
+
+        await job.save();
+
+        return { message: 'Success' };
+    } catch (error) {
+        throw new AppError(error);
+    }
+};

@@ -141,3 +141,19 @@ exports.getJobById = catchAsync(async (req, res, next) => {
         return next(new AppError(error));
     }
 });
+
+exports.contractorOffer = catchAsync(async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const price = req.body;
+        const user = req.user;
+
+        if (!user || !id || !price || user.role != 'Contractor') {
+            next(new AppError('Invalid request.', 400));
+        }
+        const result = await jobService.contractorOffer(id, user._id, price);
+        res.status(200).json(result);
+    } catch (error) {
+        next(new AppError(error, 500));
+    }
+});
