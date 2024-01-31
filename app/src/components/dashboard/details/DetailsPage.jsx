@@ -1,23 +1,38 @@
 import { useParams } from 'react-router-dom';
-import { Box, Group, Image, Modal, NumberFormatter, Paper, Stack, Text } from '@mantine/core';
+import {
+    Box,
+    Button,
+    Group,
+    Image,
+    Modal,
+    NumberFormatter,
+    Paper,
+    Stack,
+    Text,
+} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useState } from 'react';
 
 import { useGetJobByIdQuery } from '../../../store/features/api/jobsApi';
 import { useSelector } from 'react-redux';
+import ProvidePrice from './contractorComponents/ProvidePrice';
 
 const DetailsPage = () => {
     const { id } = useParams();
     const role = useSelector((state) => state.auth.user.role);
     const { data: currentJob } = useGetJobByIdQuery(id);
     const dateObj = new Date(currentJob?.createdAt);
-    const [imageOpened, { open: openImage, close: closeImage }] = useDisclosure(false);
+    const [opened, { open, close }] = useDisclosure(false);
+    const [modalContent, setModalContent] = useState('');
 
     const [imageUrl, setImageUrl] = useState('');
     return (
         <>
-            <Modal opened={imageOpened} onClose={closeImage}>
-                <Image mah='70vh' maw='70vw' fit='scale-down' src={imageUrl} />
+            <Modal opened={opened} onClose={close}>
+                {modalContent === 'image' && (
+                    <Image mah='70vh' maw='70vw' fit='scale-down' src={imageUrl} />
+                )}
+                {modalContent === 'providePrice' && <ProvidePrice close={close} job={currentJob} />}
             </Modal>
             {currentJob ? (
                 <Paper withBorder p='lg'>
@@ -76,21 +91,36 @@ const DetailsPage = () => {
                                             style={{ cursor: 'pointer' }}
                                             onClick={() => {
                                                 setImageUrl(img.imageUrl);
-                                                openImage();
+                                                setModalContent('image');
+                                                open();
                                             }}
                                         />
                                     ))}
                                 </Group>
                             </Box>
                         ))}
-                        {currentJob.totalPrice ? (
-                            <Text>
-                                Total price:{' '}
-                                <NumberFormatter prefix='£ ' value={currentJob.totalPrice} />
-                            </Text>
-                        ) : (
-                            <Text>Waiting for quote</Text>
-                        )}
+                        <Group>
+                            {currentJob.totalPrice ? (
+                                <Text>
+                                    Total price:{' '}
+                                    <NumberFormatter prefix='£ ' value={currentJob.totalPrice} />
+                                </Text>
+                            ) : (
+                                <Group>
+                                    <Text>Waiting for quote</Text>
+                                </Group>
+                            )}
+                            {currentJob.status === 'created' && role === 'Contractor' && (
+                                <Button
+                                    onClick={() => {
+                                        setModalContent('providePrice');
+                                        open();
+                                    }}
+                                >
+                                    Give a price
+                                </Button>
+                            )}
+                        </Group>
 
                         <Group>
                             {currentJob.allImages.map((img) => (
@@ -101,7 +131,8 @@ const DetailsPage = () => {
                                     src={img.imageUrl}
                                     onClick={() => {
                                         setImageUrl(img.imageUrl);
-                                        openImage();
+                                        setModalContent('image');
+                                        open();
                                     }}
                                 />
                             ))}
