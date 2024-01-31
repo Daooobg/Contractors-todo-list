@@ -217,6 +217,46 @@ const jobsApi = createApi({
             getJobById: builder.query({
                 query: (args) => ({ url: `/jobs/jobs/${args}` }),
             }),
+            contractorOffer: builder.mutation({
+                query: (args) => ({
+                    url: `/jobs/contractor/offer/${args.jobId}`,
+                    method: 'POST',
+                    body: args.price,
+                }),
+                async onQueryStarted(data, { queryFulfilled, dispatch }) {
+                    const jobOffer = dispatch(
+                        jobsApi.util.updateQueryData('getJobById', data.jobId, (draftData) => {
+                            draftData.issues.map(
+                                (issue) => (issue.price = data.price.issues[issue._id])
+                            );
+                            draftData.totalPrice = data.price.totalPrice;
+                        })
+                    );
+
+                    try {
+                        await queryFulfilled;
+                        notifications.show({
+                            color: 'teal',
+                            title: 'Offer',
+                            message: 'Successfully send the offer',
+                            icon: <FaCheckCircle style={{ width: '30px', height: '30px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                            withCloseButton: true,
+                        });
+                    } catch (error) {
+                        notifications.show({
+                            color: 'red',
+                            title: 'Contact details',
+                            message: error.error.data,
+                            icon: <VscError style={{ width: '30px', height: '30px' }} />,
+                            loading: false,
+                            autoClose: 3000,
+                        });
+                        jobOffer.undo();
+                    }
+                },
+            }),
         };
     },
 });
@@ -231,5 +271,6 @@ export const {
     useGetOwnerJobsQuery,
     useGetJobByIdQuery,
     useGetContractorJobsQuery,
+    useContractorOfferMutation,
 } = jobsApi;
 export { jobsApi };
